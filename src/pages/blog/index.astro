@@ -1,0 +1,37 @@
+
+---
+import { getCollection } from "astro:content";
+import Layout from "../../layouts/Layout.astro";
+import LinkInline from "../../components/LinkInline.astro";
+import TitleSection from "../../components/TitleSection.astro";
+import SectionContainer from "../../components/SectionContainer.astro";
+
+const posts = await getCollection("blog");
+---
+
+<Layout title="Blog" description="">
+  <main class="px-4">
+    <SectionContainer class="flex flex-col gap-y-4">
+        <TitleSection title="Blog" />
+        <ul class="flex flex-col gap-y-2">
+            {
+                posts.map((post) => (
+                    <li>
+                        <a href={`/blog/${post.slug}`} class="flex flex-col gap-y-2 p-4 rounded-lg hover:bg-neutral-900/50 transition-colors duration-300 ease-in-out">
+                            <h3 class="text-xl font-semibold text-wrap">{post.data.title}</h3>
+                            <p class="text-pretty">{post.data.description}</p>
+                            <time datetime={post.data.pubDate.toISOString()} class="text-sm text-neutral-400">
+                                {post.data.pubDate.toLocaleDateString('es-ES', {
+                                    year: 'numeric',
+                                    month: 'long',
+                                    day: 'numeric'
+                                })}
+                            </time>
+                        </a>
+                    </li>
+                ))
+            }
+        </ul>
+    </SectionContainer>
+  </main>
+</Layout>

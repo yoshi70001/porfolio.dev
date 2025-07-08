@@ -1,0 +1,48 @@
+---
+import { getCollection } from "astro:content";
+import Layout from "../../layouts/Layout.astro";
+import TitleSection from "../../components/TitleSection.astro";
+import SectionContainer from "../../components/SectionContainer.astro";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("blog");
+  return posts.map((post) => ({
+    params: { slug: post.slug },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content } = await post.render();
+
+const WORDS_PER_MINUTE = 200;
+const readingTime = Math.ceil(post.body.split(' ').length / WORDS_PER_MINUTE);
+---
+
+<Layout title={post.data.title} description="">
+  <main class="px-4">
+    <SectionContainer class="flex flex-col gap-y-4 pt-24 max-w-md">
+      <article class="prose prose-invert max-w-none">
+        <header>
+          <!-- <h1 class="text-4xl font-bold mb-2">{post.data.title}</h1>
+          <p class="text-neutral-400">{post.data.description}</p> -->
+          <time
+            datetime={post.data.pubDate.toISOString()}
+            class="text-sm text-neutral-400"
+          >
+            Publicado el {
+              post.data.pubDate.toLocaleDateString("es-ES", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })
+            }
+            • {readingTime} min de lectura
+          </time>
+        </header>
+        <div class="divider my-4"></div>
+        <Content />
+      </article>
+    </SectionContainer>
+  </main>
+</Layout>
