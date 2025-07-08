@@ -1,71 +1,34 @@
 ---
 import GitHub from "./icons/GitHub.astro";
-import NextJS from "./icons/NextJS.astro";
-import Tailwind from "./icons/Tailwind.astro";
 import Link from "./icons/Link.astro";
 import LinkButton from "./LinkButton.astro";
-import Express from "./icons/Express.astro";
-import Ejs from "./icons/Ejs.astro";
-const TAGS = {
-  NEXT: {
-    name: "Next.js",
-    class: "bg-black text-white",
-    icon: NextJS,
-  },
-  TAILWIND: {
-    name: "Tailwind CSS",
-    class: "bg-[#003159] text-white",
-    icon: Tailwind,
-  },
-  EXPRESS: {
-    name: "Express",
-    class: "bg-[#003159] text-white",
-    icon: Express,
-  },
-  EJS: {
-    name: "EJS",
-    class: "bg-[#003159] text-white",
-    icon: Ejs,
-  },
+
+type ProjectTag = {
+  name: string;
+  class: string;
+  icon?: any;
 };
-const PROJECTS = [
-  {
-    title: "HardSub Extractor",
-    description:
-      "Aplicacion de escritorio para la extraccion de HardSubs en videos mediante el uso de redes neuronales para deteccion y ocr en tiempo real.",
-    github: "https://github.com/yoshi70001/HardSubExtractor",
-    image: "/projects/harsubextractor.webp",
-    tags: [TAGS.NEXT, TAGS.TAILWIND],
-  },
-  {
-    title: "Animeflv Wrapper",
-    description:
-      "Animeflv Wrapper es una pagina web que permite ver anime en español latino. Esta construida con Express y EJS, y utiliza scrapping de la pagina Animeflv para obtener los episodios y la información del anime.",
-    link: "https://jespinoza.mooo.com/anime/",
-    github: "https://github.com/yoshi70001/animeflvWrapper",
-    image: "/projects/animeflvWrapper.webp",
-    tags: [TAGS.EXPRESS, TAGS.EJS],
-  },
-  {
-    title: "ScreenShot Site",
-    description:
-      "Screenshot Site genera capturas de pantalla de sitios web al instante. Ingresa una URL y descarga una imagen lista para compartir. Rápido, simple e ideal para profesionales.",
-    link: "https://jespinoza.mooo.com/screenshot/",
-    github: "https://github.com/yoshi70001/screenshot-site",
-    image: "/projects/screenShot.webp",
-    tags: [TAGS.EXPRESS, TAGS.EJS],
-  },
-];
+
+type Project = {
+  image: string;
+  title: string;
+  description: string;
+  tags: ProjectTag[];
+  link?: string;
+  github?: string;
+};
+
+const { projects } = Astro.props as { projects: Project[] };
 ---
 
 <div class="flex flex-col gap-y-16">
   {
-    PROJECTS.map(({ image, title, description, tags, link, github }) => (
+    projects.map(({ image, title, description, tags, link, github }) => (
       <article class="flex flex-col space-x-0 space-y-8 group md:flex-row md:space-x-8 md:space-y-0">
         <div class="w-full md:w-1/2">
           <div class="relative flex flex-col items-center col-span-6 row-span-5 gap-8 transition duration-500 ease-in-out transform shadow-xl overflow-clip rounded-xl sm:rounded-xl md:group-hover:-translate-y-1 md:group-hover:shadow-2xl lg:border lg:border-gray-800 lg:hover:border-gray-700 lg:hover:bg-gray-800/50">
             <img
-              alt="Recién llegado vs 5 años en Nueva Zelanda"
+              alt={`Imagen del proyecto ${title}`}
               class="object-cover object-top w-full h-56 transition duration-500 sm:h-full md:scale-110 md:group-hover:scale-105"
               loading="lazy"
               src={image}
@@ -84,7 +47,7 @@ const PROJECTS = [
                   <span
                     class={`flex gap-x-2 rounded-full text-xs ${tag.class} py-1 px-2 `}
                   >
-                    <tag.icon class="size-4" />
+                    {tag.icon && <tag.icon class="size-4" />}
                     {tag.name}
                   </span>
                 </li>

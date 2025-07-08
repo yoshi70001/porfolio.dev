@@ -10,6 +10,122 @@ import Projects from "@/components/Projects.astro";
 import SectionContainer from "@/components/SectionContainer.astro";
 import Hero from "@/components/Hero.astro";
 import TitleSection from "@/components/TitleSection.astro";
+
+import GitHub from "@/components/icons/GitHub.astro";
+import NextJS from "@/components/icons/NextJS.astro";
+import Tailwind from "@/components/icons/Tailwind.astro";
+import Link from "@/components/icons/Link.astro";
+import LinkButton from "@/components/LinkButton.astro";
+import Express from "@/components/icons/Express.astro";
+import Ejs from "@/components/icons/Ejs.astro";
+
+const TAGS = {
+  NEXT: {
+    name: "Next.js",
+    class: "bg-black text-white",
+    icon: NextJS,
+  },
+  TAILWIND: {
+    name: "Tailwind CSS",
+    class: "bg-[#003159] text-white",
+    icon: Tailwind,
+  },
+  EXPRESS: {
+    name: "Express",
+    class: "bg-[#003159] text-white",
+    icon: Express,
+  },
+  EJS: {
+    name: "EJS",
+    class: "bg-[#003159] text-white",
+    icon: Ejs,
+  },
+  JAVASCRIPT: {
+    name: "JavaScript",
+    class: "bg-[#F7DF1E] text-black",
+    icon: CodeIcon,
+  },
+  TYPESCRIPT: {
+    name: "TypeScript",
+    class: "bg-[#3178C6] text-white",
+    icon: CodeIcon,
+  },
+  PYTHON: {
+    name: "Python",
+    class: "bg-[#3776AB] text-white",
+    icon: CodeIcon,
+  },
+  HTML: {
+    name: "HTML",
+    class: "bg-[#E34F26] text-white",
+    icon: CodeIcon,
+  },
+  CSS: {
+    name: "CSS",
+    class: "bg-[#1572B6] text-white",
+    icon: CodeIcon,
+  },
+};
+
+const HARDCODED_PROJECTS = [
+  {
+    title: "HardSub Extractor",
+    description:
+      "Aplicacion de escritorio para la extraccion de HardSubs en videos mediante el uso de redes neuronales para deteccion y ocr en tiempo real.",
+    github: "https://github.com/yoshi70001/HardSubExtractor",
+    image: "/projects/harsubextractor.webp",
+    tags: [TAGS.NEXT, TAGS.TAILWIND],
+  },
+  {
+    title: "Animeflv Wrapper",
+    description:
+      "Animeflv Wrapper es una pagina web que permite ver anime en español latino. Esta construida con Express y EJS, y utiliza scrapping de la pagina Animeflv para obtener los episodios y la información del anime.",
+    link: "https://jespinoza.mooo.com/anime/",
+    github: "https://github.com/yoshi70001/animeflvWrapper",
+    image: "/projects/animeflvWrapper.webp",
+    tags: [TAGS.EXPRESS, TAGS.EJS],
+  },
+  {
+    title: "ScreenShot Site",
+    description:
+      "Screenshot Site genera capturas de pantalla de sitios web al instante. Ingresa una URL y descarga una imagen lista para compartir. Rápido, simple e ideal para profesionales.",
+    link: "https://jespinoza.mooo.com/screenshot/",
+    github: "https://github.com/yoshi70001/screenshot-site",
+    image: "/projects/screenShot.webp",
+    tags: [TAGS.EXPRESS, TAGS.EJS],
+  },
+];
+
+const response = await fetch("https://api.github.com/users/yoshi70001/repos");
+const githubProjects = await response.json();
+interface Repo {
+    fork:boolean,
+    language:string,
+    name:string,
+    description:string,
+    html_url:string,
+    homepage:String|undefined
+}
+const mappedGithubProjects = githubProjects
+  .filter((repo:Repo) => !repo.fork)
+  .map((repo:Repo) => {
+    const languageTag = repo.language && TAGS[repo.language.toUpperCase()] ? TAGS[repo.language.toUpperCase()] : {
+      name: repo.language || "Other",
+      class: "bg-neutral-700 text-white",
+      icon: CodeIcon,
+    };
+
+    return {
+      title: repo.name,
+      description: repo.description || "No description provided.",
+      github: repo.html_url,
+      link: repo.homepage || undefined,
+      image: "/projects/github-placeholder.webp", // Placeholder image
+      tags: [languageTag],
+    };
+  });
+
+const ALL_PROJECTS = [...HARDCODED_PROJECTS, ...mappedGithubProjects];
 ---
 
 <Layout
@@ -35,7 +151,7 @@ import TitleSection from "@/components/TitleSection.astro";
         <CodeIcon class="size-7" />
         Proyectos
       </TitleSection>
-      <Projects />
+      <Projects projects={ALL_PROJECTS} />
     </SectionContainer>
 
     <SectionContainer id="sobre-mi">
