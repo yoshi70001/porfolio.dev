@@ -18,8 +18,13 @@ import Link from "@/components/icons/Link.astro";
 import LinkButton from "@/components/LinkButton.astro";
 import Express from "@/components/icons/Express.astro";
 import Ejs from "@/components/icons/Ejs.astro";
+interface TagObj {
+  name: string;
+  class: string;
+  icon: (_props: Record<string, any>) => any;
+}
 
-const TAGS = {
+const TAGS: Record<string, TagObj> = {
   NEXT: {
     name: "Next.js",
     class: "bg-black text-white",
@@ -99,21 +104,24 @@ const HARDCODED_PROJECTS = [
 const response = await fetch("https://api.github.com/users/yoshi70001/repos");
 const githubProjects = await response.json();
 interface Repo {
-    fork:boolean,
-    language:string,
-    name:string,
-    description:string,
-    html_url:string,
-    homepage:String|undefined
+  fork: boolean;
+  language: string;
+  name: string;
+  description: string;
+  html_url: string;
+  homepage: String | undefined;
 }
 const mappedGithubProjects = githubProjects
-  .filter((repo:Repo) => !repo.fork)
-  .map((repo:Repo) => {
-    const languageTag = repo.language && TAGS[repo.language.toUpperCase()] ? TAGS[repo.language.toUpperCase()] : {
-      name: repo.language || "Other",
-      class: "bg-neutral-700 text-white",
-      icon: CodeIcon,
-    };
+  .filter((repo: Repo) => !repo.fork)
+  .map((repo: Repo) => {
+    const languageTag =
+      repo.language && TAGS[repo.language.toUpperCase()]
+        ? TAGS[repo.language.toUpperCase()]
+        : {
+            name: repo.language || "Other",
+            class: "bg-neutral-700 text-white",
+            icon: CodeIcon,
+          };
 
     return {
       title: repo.name,
