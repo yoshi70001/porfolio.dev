@@ -10,6 +10,7 @@ import Projects from "@/components/Projects.astro";
 import SectionContainer from "@/components/SectionContainer.astro";
 import Hero from "@/components/Hero.astro";
 import TitleSection from "@/components/TitleSection.astro";
+<<<<<<< HEAD
 
 import GitHub from "@/components/icons/GitHub.astro";
 import NextJS from "@/components/icons/NextJS.astro";
@@ -134,6 +135,8 @@ const mappedGithubProjects = githubProjects
   });
 
 const ALL_PROJECTS = [...HARDCODED_PROJECTS, ...mappedGithubProjects];
+=======
+>>>>>>> 8e906a05ddc67c70c66ce50334bb1f84f2947ff8
 ---
 
 <Layout
@@ -159,7 +162,7 @@ const ALL_PROJECTS = [...HARDCODED_PROJECTS, ...mappedGithubProjects];
         <CodeIcon class="size-7" />
         Proyectos
       </TitleSection>
-      <Projects projects={ALL_PROJECTS} />
+      <Projects />
     </SectionContainer>
 
     <SectionContainer id="sobre-mi">
