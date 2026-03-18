@@ -10,11 +10,17 @@ import Projects from "@/components/Projects.astro";
 import SectionContainer from "@/components/SectionContainer.astro";
 import Hero from "@/components/Hero.astro";
 import TitleSection from "@/components/TitleSection.astro";
+import BlogFeatured from "@/components/BlogFeatured.astro";
+import WhyMe from "@/components/WhyMe.astro";
+import TechStack from "@/components/TechStack.astro";
+import SpringerPublication from "@/components/SpringerPublication.astro";
+import Achievements from "@/components/Achievements.astro";
+import Certifications from "@/components/Certifications.astro";
 ---
 
 <Layout
-  title="Porfolio de Jorge - Desarrollador y Programador Oracle Netsuite con 4 años de experiencia"
-  description="Contrata a Jorge para crear tu aplicación web o Netsuite"
+  title="Jorge Espinoza | DevOps & NetSuite Developer | AI Researcher Published by Springer"
+  description="DevOps Engineer & NetSuite Developer con investigación en IA/ML publicada por Springer Nature. 15+ certificaciones Oracle. Experiencia en Joyit, 2win y LatamReady. Especialista en integraciones, CI/CD y Machine Learning para toma de decisiones."
 >
   <main class="px-4">
     <SectionContainer class="py-16 md:py-36">
@@ -22,22 +28,43 @@ import TitleSection from "@/components/TitleSection.astro";
     </SectionContainer>
   </main>
   <div class="space-y-24">
+    <!-- Publicación Springer Nature (sección destacada especial) -->
+    <SpringerPublication />
+
+    <!-- Logros Destacados -->
+    <Achievements />
+
+    <!-- Experiencia Profesional -->
     <SectionContainer id="experiencia">
       <TitleSection>
         <Briefcase class="size-8" />
-        Experiencia laboral
+        Experiencia Profesional
       </TitleSection>
       <Experience />
     </SectionContainer>
 
+    <!-- Certificaciones Profesionales -->
+    <Certifications />
+
+    <!-- Blog Técnico -->
+    <BlogFeatured />
+
+    <!-- Por Qué Me Eligen -->
+    <WhyMe />
+
+    <!-- Proyectos Técnicos -->
     <SectionContainer id="proyectos">
       <TitleSection>
         <CodeIcon class="size-7" />
-        Proyectos
+        Proyectos Técnicos
       </TitleSection>
       <Projects />
     </SectionContainer>
 
+    <!-- Stack Tecnológico -->
+    <TechStack />
+
+    <!-- Sobre mí -->
     <SectionContainer id="sobre-mi">
       <TitleSection>
         <ProfileCheck class="size-8" />

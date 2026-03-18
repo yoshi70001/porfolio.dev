@@ -1,0 +1,67 @@
+---
+import SectionContainer from "./SectionContainer.astro"
+import TitleSection from "./TitleSection.astro"
+import { getCollection } from "astro:content"
+
+const allPosts = await getCollection("blog")
+const featuredPosts = allPosts.slice(0, 3)
+---
+
+<SectionContainer id="blog">
+  <TitleSection>
+    <svg class="size-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path>
+    </svg>
+    Blog Técnico
+  </TitleSection>
+  
+  <p class="mt-4 text-lg text-gray-600 dark:text-gray-400 max-w-2xl">
+    Comparto conocimiento sobre NetSuite, SuiteScript, integraciones y DevOps. 
+    Artículos basados en experiencia real en proyectos empresariales.
+  </p>
+  
+  <div class="grid gap-6 mt-12 md:grid-cols-2 lg:grid-cols-3">
+    {featuredPosts.map((post) => (
+      <a
+        href={`/blog/${post.slug}`}
+        class="group block p-6 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow dark:bg-gray-800 border border-gray-200 dark:border-gray-700"
+      >
+        <div class="flex items-center gap-2 mb-3">
+          <span class="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-700 rounded-md dark:bg-blue-900/30 dark:text-blue-400">
+            NetSuite
+          </span>
+          <span class="text-xs text-gray-500 dark:text-gray-400">
+            {post.data.pubDate.toLocaleDateString('es-PE', { month: 'short', day: 'numeric', year: 'numeric' })}
+          </span>
+        </div>
+        
+        <h3 class="mb-2 text-lg font-semibold text-gray-900 group-hover:text-blue-600 dark:text-white dark:group-hover:text-blue-400 transition-colors">
+          {post.data.title}
+        </h3>
+        
+        <p class="mb-4 text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
+          {post.data.description}
+        </p>
+        
+        <span class="inline-flex items-center text-sm font-medium text-blue-600 dark:text-blue-400 group-hover:gap-2 transition-all">
+          Leer artículo
+          <svg class="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+          </svg>
+        </span>
+      </a>
+    ))}
+  </div>
+  
+  <div class="mt-10 text-center">
+    <a
+      href="/blog"
+      class="inline-flex items-center gap-2 px-6 py-3 text-base font-semibold text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 dark:text-gray-300 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 transition-colors"
+    >
+      Ver todos los artículos
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+      </svg>
+    </a>
+  </div>
+</SectionContainer>
