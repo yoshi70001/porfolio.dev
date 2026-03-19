@@ -1,5 +1,6 @@
 ---
-import { getCollection } from "astro:content";
+// 1. Importar 'render' desde astro:content
+import { getCollection, render } from "astro:content";
 import Layout from "../../layouts/Layout.astro";
 import TitleSection from "../../components/TitleSection.astro";
 import SectionContainer from "../../components/SectionContainer.astro";
@@ -7,16 +8,20 @@ import SectionContainer from "../../components/SectionContainer.astro";
 export async function getStaticPaths() {
   const posts = await getCollection("blog");
   return posts.map((post) => ({
-    params: { slug: post.slug },
+    params: { slug: post.id },
     props: { post },
   }));
 }
 
 const { post } = Astro.props;
-const { Content } = await post.render();
+
+// 3. Usar la función render() en lugar del método post.render()
+const { Content } = await render(post);
 
 const WORDS_PER_MINUTE = 200;
-const readingTime = Math.ceil(post.body.split(' ').length / WORDS_PER_MINUTE);
+// Fallback a un string vacío en caso de que post.body no esté expuesto directamente en tu loader
+const rawContent = post.body || ""; 
+const readingTime = Math.ceil(rawContent.split(' ').length / WORDS_PER_MINUTE);
 ---
 
 <Layout title={post.data.title} description="">
@@ -24,8 +29,6 @@ const readingTime = Math.ceil(post.body.split(' ').length / WORDS_PER_MINUTE);
     <SectionContainer class="flex flex-col gap-y-4 pt-24 max-w-md">
       <article class="prose prose-invert max-w-none">
         <header>
-          <!-- <h1 class="text-4xl font-bold mb-2">{post.data.title}</h1>
-          <p class="text-neutral-400">{post.data.description}</p> -->
           <time
             datetime={post.data.pubDate.toISOString()}
             class="text-sm text-neutral-400"
