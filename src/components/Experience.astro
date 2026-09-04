@@ -4,19 +4,147 @@ import ExperienceItem from "./ExperienceItem.astro";
 const EXPERIENCE = [
   {
     date: "Febrero 2026 - Actualidad",
-    title: "Especialista en Soporte NetSuite",
+    title: "Desarrollador Oracle NetSuite (SuiteScript)",
     company: "Joyit",
     description:
-      "Soporte especializado NetSuite para cliente Biomont (sector farmacéutico). Desarrollo de integraciones con sistemas de salud mediante HL7 y APIs REST, implementando soluciones que cumplen con estándares regulatorios y requisitos de compliance de la industria.",
+      "Desarrollador especializado en el ecosistema Oracle NetSuite (SuiteScript 2.1, SuiteCloud SDF) con foco en manufactura farmacéutica, costeo de producción y localización tributaria peruana. Para Biomont, laboratorio farmacéutico en Perú con operaciones en Ecuador y vínculo con Kuntur Pharma (vía 2Win, partner NetSuite), diseñé e implementé más de 15 módulos de negocio sobre NetSuite OneWorld (~250.000 líneas de SuiteScript en 11 proyectos).",
     link: "https://joyit.com/",
+    sections: [
+      {
+        heading: "Manufactura y producción",
+        items: [
+          "Construí el planificador Biomont PPS (Programa de Producción Semanal): custom record con documentación funcional, diagramas de flujo y programación semanal de órdenes de trabajo.",
+          "Desarrollé el sistema de costeo de productos: flujo de aprobación de 5 estados (abierto → cotizado y contabilizado), cálculo de mano de obra y CIF, cotizaciones y reportes PDF/Excel.",
+          "Implementé la Gestión de Tiempos de Producción: aplicación web externa (login y registro de operaciones de planta) servida vía Suitelet, más 14 scripts NetSuite (Map/Reduce, reportes de tiempos aprobados, validaciones en OT).",
+          "Personalicé órdenes de trabajo: entrada/salida de OT, liquidación de materiales e impresión de etiquetas.",
+        ],
+      },
+      {
+        heading: "Finanzas y costos",
+        items: [
+          "Módulo de pago masivo de facturas con cálculo fiscal peruano (retenciones y detracciones) e integración con E-Payments/PFA.",
+          "Facturación intercompany Biomont ↔ Kuntur Pharma con registro automático, arquitectura modular y custom record de auditoría/logs.",
+          "Amortizaciones automáticas en facturas de proveedor con procesamiento masivo Map/Reduce.",
+          "Suite de reportes financieros Suitelet: rotación de inventario, costo estándar vs. real, estados financieros, cuenta corriente de proveedores y comparativo de resultados (plantillas FreeMarker).",
+          "Conciliación bancaria, letras de deudores y solicitudes de dinero con flujo de aprobación.",
+          "SuiteApp de asignación de costos con automatización de 5 segmentos contables custom (mercado, país, tipo de producto, categoría y línea) y migración de datos legado.",
+        ],
+      },
+      {
+        heading: "Localización tributaria peruana (SUNAT)",
+        items: [
+          "Libro electrónico de compras con estructura de reporte SUNAT.",
+          "Guías de remisión y facturación masiva Ecommerce (facturas + guías) para pedidos B2C.",
+          "Reporte de notas de crédito por ítem con SuiteQL y selección dinámica de artículos.",
+        ],
+      },
+      {
+        heading: "Compras y supply",
+        items: [
+          "Nivel de urgencia para órdenes de compra con priorización de abastecimiento.",
+          "Importador de cotizaciones de proveedores y generador de CSV para carga masiva de Purchase Orders desde Excel, con guía de usuario.",
+        ],
+      },
+      {
+        heading: "Otros",
+        items: [
+          "Chatbot de WhatsApp conectado a API de tracking de pedidos.",
+          "Certificados de análisis digitales para control de calidad farmacéutico.",
+          "Definí convenciones de arquitectura en capas (interfaces → domain → dao) documentadas en archivos AGENTS.md para desarrollo asistido por IA.",
+        ],
+      },
+    ],
+    stack: [
+      "SuiteScript 2.1",
+      "Suitelet",
+      "Client",
+      "UserEvent",
+      "Map/Reduce",
+      "MassUpdate",
+      "Workflow Action",
+      "Plugins",
+      "SuiteQL",
+      "SuiteCloud SDF/CLI (scloud)",
+      "NetSuite OneWorld (Perú/Ecuador)",
+      "JavaScript",
+      "FreeMarker",
+      "Node.js (pnpm, ESLint, Prettier)",
+      "Python",
+      "Git/GitHub",
+      "Desarrollo asistido por IA",
+    ],
   },
   {
     date: "Marzo 2025 - Actualidad",
     title: "Desarrollador e Integrador - NetSuite",
     company: "2WIN Consulting",
     description:
-      "Desarrollo de integraciones NetSuite con sistemas de salud (InterSystem) mediante HL7 y APIs REST. Implementación de integraciones con sistemas retail (GeoPOS y WMS-Netlogistik). Aplicación de Clean Architecture y mejores prácticas en SuiteScript 2.0.",
+      "Desarrollo de suite de integraciones NetSuite ↔ sistema hospitalario (protocolo HL7) para Andes Salud, localización tributaria chilena, integraciones ERP con retail y utilities, y herramientas internas potenciadas con IA generativa.",
     link: "https://2win.cl/",
+    sections: [
+      {
+        heading: "Salud — Andes Salud (red de clínicas)",
+        items: [
+          "Diseñé la suite de integraciones NetSuite ↔ sistema hospitalario (protocolo HL7): sincronización de pacientes, admisiones, órdenes de venta, farmacia hospitalaria y POS de farmacia, prefacturación y contabilidad. 20 RESTlets en producción, arquitectura en capas (interfaces/domain/dao), 53 flujos documentados y API publicada con OpenAPI.",
+          "Implementé el módulo de recaudaciones: generación masiva y asíncrona de documentos contables (facturas, notas de crédito, journals, pagos) desde cierres de caja de los centros de salud, con callbacks bidireccionales hacia la API del sistema clínico.",
+          "Desarrollé corrección monetaria (IPC chileno) y revaluación Mid-Life de activos fijos sobre Fixed Asset Management, con SuiteQL avanzado (CTEs paginados multi-fuente) y protección anti-recursión.",
+          "Construí un simulador web de APIs (Node.js, Express, Sequelize, SQLite, JWT, OAuth2 M2M) para probar RESTlets con multi-ambiente, gestión de usuarios por roles y hardening de seguridad.",
+        ],
+      },
+      {
+        heading: "Localización tributaria chilena",
+        items: [
+          "Lideré la migración de módulos de localización a SuiteTax: redistribución de IVA, corrección monetaria, factoring automatizado y balance de 8 columnas.",
+          "Desarrollé nóminas de pago bancarias para Banco Santander y Scotiabank, integración de RRHH con BUK, y módulo de rendiciones de gastos con trazabilidad de auditoría.",
+          "Di soporte al módulo de facturación electrónica DTE (SII): boletas, facturas, NC/ND, guías de despacho y facturas de exportación, con gestión de folios/CAF.",
+        ],
+      },
+      {
+        heading: "Integraciones ERP",
+        items: [
+          "Multivende (plataforma OMS e-commerce, cliente Bebesit): sincronización de clientes, artículos, precios, stock y órdenes de venta con colas de procesamiento, reintentos y auditoría.",
+          "GEO POS (Gama Italy): integración bidireccional de ventas, inventarios y catálogos, incluyendo un proxy en Cloudflare Workers para sortear restricciones de red.",
+          "Chilquinta (electricidad): importación masiva de cartolas bancarias/contables desde SAP (FBL3N/FBL1N), prorrateo automático de montos entre subsidiarias y dashboards con SuiteQL.",
+        ],
+      },
+      {
+        heading: "IA y herramientas de productividad",
+        items: [
+          "OCR de facturas con Google Gemini: PDF → JSON estructurado → factura generada en NetSuite, con control de jobs, estados y reproceso.",
+          "Creé una suite interna de 17 herramientas para NetSuite: editor SQL/SuiteQL con generación asistida por IA y búsqueda semántica del esquema (embeddings), ejecutor de código SuiteScript, conversor HL7↔JSON, generador de diagramas Mermaid, servidor de reportes Markdown→PDF y cliente OAuth2 M2M (certificado).",
+        ],
+      },
+      {
+        heading: "Otros",
+        items: [
+          "Sitio web corporativo (2win.cl) en Astro 5, 100% estático, con SEO (Open Graph, JSON-LD) y accesibilidad WCAG AA.",
+          "Mantención de parser HL7 en TypeScript con tests (Jest).",
+        ],
+      },
+    ],
+    stack: [
+      "SuiteScript 2.0/2.1",
+      "RESTlet",
+      "Suitelet",
+      "Map/Reduce",
+      "Scheduled",
+      "User Event",
+      "Workflow",
+      "GL Plugins",
+      "SuiteQL",
+      "SuiteCloud SDF/CLI",
+      "JavaScript/TypeScript",
+      "Node.js (Express, Sequelize, SQLite)",
+      "JWT",
+      "Worker threads",
+      "Python",
+      "Astro",
+      "Cloudflare Workers",
+      "Git/GitHub/GitLab",
+      "IA generativa (Gemini, Cerebras)",
+      "HL7",
+      "DTE/SII",
+    ],
   },
   {
     date: "Enero 2023 - Febrero 2025",
