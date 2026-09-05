@@ -213,7 +213,71 @@ export const experience: ExperienceEntry[] = [
     period: "Ene 2023 — Feb 2025",
     url: "https://latamready.com/",
     summary:
-      "Gestión de infraestructura Oracle Cloud (OCI), VPS, OracleDB, Functions y servicios cloud. Integración de conexiones SFTP, SSH y SOAP con bancos internacionales (Bancolombia, JPMorgan). Implementación de conexiones WS estándar para AGIP, ARBA y AFIP. Promoción de buenas prácticas DevOps y CI/CD: reducción de 40% en costos operativos migrando de AWS a OCI, 30% de mejora en tiempos de reportes y 20% de eficiencia en despliegues.",
+      "Desarrollador full-stack especializado en Oracle NetSuite (SuiteScript 2.x, SuiteCloud SDF) con foco en microservicios backend, herramientas con IA, QA automatizado e infraestructura cloud. Pasé del desarrollo de localizaciones a construir servicios del producto en producción sobre Oracle Cloud (OCI): localizaciones SuiteTax para múltiples países, módulos de pagos electrónicos y automatización interna, con buenas prácticas DevOps y CI/CD.",
+    areas: [
+      {
+        heading: "Localización tributaria multi-país (SuiteTax)",
+        items: [
+          "Perú (ste-peru-localization): custom records, traducciones multiidioma y transaction fields sobre la SuiteApp de localización.",
+          "Argentina (ste-argentina-localization): flujo de percepciones con soporte AGIP, validación CUIT, columna tipo de entidad y generación individual de certificados. Implementación de conexiones WS estándar para AGIP, ARBA y AFIP.",
+          "Chile y LatAm: librería transversal de campos custom en facturas con ocultamiento dinámico de columnas; configuración de régimen minero (latamSeals) e impresión GL Argentina.",
+          "Construí el Wizard de Setup fiscal (creación de tax types por pasos) y la interfaz de plantillas con listas draggables (Universal Settings).",
+        ],
+      },
+      {
+        heading: "Pagos y módulos financieros",
+        items: [
+          "Templates de pagos electrónicos SuiteTax para Itaú Chile, Santander, BBVA Francés, BCP e Interbank (Perú).",
+          "Llevé el módulo de débito automático (Automatic Debit) de alpha a producción: estados de transacciones, queries y bot de despliegue de bundles.",
+          "Implementé la integración bancaria Interbanking (LatamReady Link) y conexiones SFTP, SSH y SOAP con bancos internacionales (Bancolombia, JPMorgan).",
+          "Mantuve el servicio de tipo de cambio multi-país: UF Chile (CLF), Honduras, Guatemala y CRC↔CAD (Costa Rica).",
+        ],
+      },
+      {
+        heading: "Microservicios e infraestructura (OCI)",
+        items: [
+          "Desarrollé microservicios del producto: OCR de facturas, RFC México, criptografía (crypto62), verificación de tipo de instancia por URL y consumo de API de padrones, con workers asíncronos, API cache y base de datos.",
+          "Realicé despliegues en Oracle Cloud Infrastructure (OCI) de apps internas (SmartReady, Wormax), con gestión de bundles y llaves SSH; administración de VPS, OracleDB y Functions.",
+          "Optimicé la app interna SmartReady: caché, compresión, prefetch, render optimizado y soporte de sitio estático.",
+          "Promoví buenas prácticas DevOps y CI/CD: reducción de 40% en costos operativos migrando de AWS a OCI, 30% de mejora en tiempos de reportes y 20% de eficiencia en despliegues.",
+        ],
+      },
+      {
+        heading: "QA automatizado",
+        items: [
+          "Desarrollé la app de QA automatizada sobre NetSuite: downloader de estructuras de configuración, ejecución de flowSteps, selección de módulos de test cases y manejo de roles con 2FA.",
+        ],
+      },
+      {
+        heading: "IA y herramientas de productividad",
+        items: [
+          "Implementé OCR de facturas con Google Gemini (PDF → JSON estructurado), validado con repositorio de pruebas propio.",
+          "Desarrollé indicadores para consultoría: portlets de KPIs de marketing/ventas, upsells no facturados (AMO) y portlets KAM sobre oportunidades.",
+          "Automatización interna con bots en Python (uploaders/downloader de ambientes), CLI propia (Node.js/C++) y servicios auxiliares en Go.",
+          "Mantuve colecciones de pruebas de API con Bruno (SuiteTalk, facturación, RFC, short URLs).",
+        ],
+      },
+    ],
+    stack: [
+      "SuiteScript 2.x",
+      "RESTlet",
+      "Suitelet",
+      "Map/Reduce",
+      "SuiteQL",
+      "SuiteCloud SDF/CLI",
+      "SuiteTax",
+      "JavaScript/TypeScript",
+      "Python",
+      "Go",
+      "Node.js",
+      "C++",
+      "SQL",
+      "Oracle Cloud (OCI)",
+      "Git/GitLab/GitHub",
+      "IA generativa (Gemini)",
+      "OCR",
+      "APIs REST (Bruno)",
+    ],
   },
   {
     company: "LatamReady",
@@ -221,7 +285,37 @@ export const experience: ExperienceEntry[] = [
     period: "Jul 2021 — Ene 2023",
     url: "https://latamready.com/",
     summary:
-      "Desarrollo de soluciones contables para múltiples países de Latinoamérica. Implementación de módulos NetSuite personalizados, SuiteScripts y RESTlets. Fomento del uso de nuevas tecnologías y mejores prácticas de codificación en el ecosistema NetSuite.",
+      "Desarrollo del core del producto LatamReady (2Win), partner NetSuite para Latinoamérica, y de soluciones contables para múltiples países de la región. Mantuve el repositorio principal de scripts del producto (~280 actualizaciones de producción entre 2021 y 2023), participé en el desarrollo de la SuiteApp central y evolucioné hasta tomar el refactor arquitectónico de la localización peruana.",
+    areas: [
+      {
+        heading: "Core del producto LatamReady",
+        items: [
+          "Mantuve y evolucioné el repositorio central de scripts del producto (script_latamready) durante más de 2 años, con actualizaciones continuas en producción sobre transacciones, records y procesos del ERP.",
+          "Participé en el desarrollo de la SuiteApp principal del producto (ste-suiteapp-development), dentro de la rama de desarrollo 2023.2.",
+          "Implementación de módulos NetSuite personalizados, SuiteScripts y RESTlets para soluciones contables en Latinoamérica.",
+          "Desarrollé herramientas de depuración (debugger de plantillas Freemarker) para acelerar el soporte de documentos generados.",
+        ],
+      },
+      {
+        heading: "Localización tributaria de Perú",
+        items: [
+          "Lideré el refactor arquitectónico de la localización peruana (ste-peru-localization): reestructuración de interfaces, Map/Reduce, clientes, handlers, helpers y constantes del código.",
+          "Implementé transaction fields personalizados con soporte de traducciones multiidioma (custom records de traducción).",
+        ],
+      },
+    ],
+    stack: [
+      "SuiteScript 2.x",
+      "Map/Reduce",
+      "UserEvent",
+      "Workflow",
+      "FreeMarker",
+      "RESTlet",
+      "SuiteCloud SDF",
+      "JavaScript",
+      "Git/GitLab",
+      "Localización fiscal Perú",
+    ],
   },
 ];
 
