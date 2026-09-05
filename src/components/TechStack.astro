@@ -1,145 +1,25 @@
 ---
-import SectionContainer from "./SectionContainer.astro"
-import TitleSection from "./TitleSection.astro"
-import CodeIcon from "./icons/Code.astro"
+import { stack } from "@/data/profile"
 ---
 
-<SectionContainer id="stack-tecnologico">
-  <TitleSection>
-    <CodeIcon class="size-8" />
-    Stack Tecnológico
-  </TitleSection>
-  
-  <p class="mt-4 text-lg text-gray-600 dark:text-gray-400 max-w-2xl">
-    Tecnologías y herramientas que utilizo diariamente para construir soluciones escalables, 
-    integraciones complejas y proyectos de investigación en IA/ML.
-  </p>
-  
-  <div class="grid gap-8 mt-12 lg:grid-cols-2">
-    <!-- NetSuite Core -->
-    <div class="p-6 bg-white rounded-xl shadow-sm dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
-      <h3 class="mb-4 text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-        <span class="w-2 h-2 bg-blue-600 rounded-full"></span>
-        Oracle NetSuite
-      </h3>
-      <div class="flex flex-wrap gap-2">
-        <span class="tech-badge">SuiteScript 2.0</span>
-        <span class="tech-badge">SuiteScript 1.0</span>
-        <span class="tech-badge">RESTlets</span>
-        <span class="tech-badge">SuiteTalk (SOAP)</span>
-        <span class="tech-badge">SuiteFlow</span>
-        <span class="tech-badge">SuiteBuilder</span>
-        <span class="tech-badge">Saved Searches</span>
-        <span class="tech-badge">CSV/JSON Imports</span>
-        <span class="tech-badge">Record Load/Submit</span>
+<div class="divide-y divide-paper-200 dark:divide-ink-800">
+  {
+    stack.map((group, i) => (
+      <div class="grid gap-3 py-6 md:grid-cols-[14rem_1fr] md:gap-8">
+        <h3 class="flex items-baseline gap-3 font-display text-base font-semibold text-ink-900 dark:text-paper-50">
+          <span class="font-mono text-xs font-medium text-ink-400 dark:text-ink-500" aria-hidden="true">
+            {String(i + 1).padStart(2, "0")}
+          </span>
+          {group.name}
+        </h3>
+        <ul class="flex flex-wrap gap-1.5">
+          {group.items.map((item) => (
+            <li class="rounded border border-paper-300 px-2.5 py-1 font-mono text-xs text-ink-600 dark:border-ink-700 dark:text-ink-300">
+              {item}
+            </li>
+          ))}
+        </ul>
       </div>
-    </div>
-
-    <!-- APIs & Integration -->
-    <div class="p-6 bg-white rounded-xl shadow-sm dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
-      <h3 class="mb-4 text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-        <span class="w-2 h-2 bg-emerald-600 rounded-full"></span>
-        APIs & Integración
-      </h3>
-      <div class="flex flex-wrap gap-2">
-        <span class="tech-badge">REST API</span>
-        <span class="tech-badge">SOAP API</span>
-        <span class="tech-badge">OAuth 2.0</span>
-        <span class="tech-badge">M2M (Machine-to-Machine)</span>
-        <span class="tech-badge">HL7 (Health Level 7)</span>
-        <span class="tech-badge">InterSystem</span>
-        <span class="tech-badge">Webhooks</span>
-        <span class="tech-badge">Postman</span>
-        <span class="tech-badge">Insomnia</span>
-      </div>
-    </div>
-
-    <!-- DevOps & Cloud -->
-    <div class="p-6 bg-white rounded-xl shadow-sm dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
-      <h3 class="mb-4 text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-        <span class="w-2 h-2 bg-purple-600 rounded-full"></span>
-        DevOps & Cloud
-      </h3>
-      <div class="flex flex-wrap gap-2">
-        <span class="tech-badge">Oracle Cloud (OCI)</span>
-        <span class="tech-badge">AWS</span>
-        <span class="tech-badge">Google Cloud</span>
-        <span class="tech-badge">Docker</span>
-        <span class="tech-badge">CI/CD</span>
-        <span class="tech-badge">Jenkins</span>
-        <span class="tech-badge">Git/GitHub</span>
-        <span class="tech-badge">VPS</span>
-        <span class="tech-badge">FinOps</span>
-      </div>
-    </div>
-
-    <!-- Backend & Languages -->
-    <div class="p-6 bg-white rounded-xl shadow-sm dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
-      <h3 class="mb-4 text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-        <span class="w-2 h-2 bg-orange-600 rounded-full"></span>
-        Backend & Lenguajes
-      </h3>
-      <div class="flex flex-wrap gap-2">
-        <span class="tech-badge">JavaScript</span>
-        <span class="tech-badge">TypeScript</span>
-        <span class="tech-badge">Node.js</span>
-        <span class="tech-badge">Express.js</span>
-        <span class="tech-badge">EJS</span>
-        <span class="tech-badge">Python</span>
-        <span class="tech-badge">SQL</span>
-        <span class="tech-badge">PostgreSQL</span>
-      </div>
-    </div>
-
-    <!-- AI & Machine Learning -->
-    <div class="p-6 bg-gradient-to-br from-amber-50 to-yellow-50 rounded-xl border-2 border-amber-200 dark:from-amber-900/20 dark:to-yellow-900/20 dark:border-amber-800 col-span-2 lg:col-span-2">
-      <h3 class="mb-4 text-xl font-bold text-amber-900 dark:text-amber-100 flex items-center gap-2">
-        <span class="w-2 h-2 bg-amber-600 rounded-full"></span>
-        🤖 Artificial Intelligence & Machine Learning
-      </h3>
-      <div class="flex flex-wrap gap-2">
-        <span class="tech-badge-amber">Machine Learning</span>
-        <span class="tech-badge-amber">Deep Learning</span>
-        <span class="tech-badge-amber">Sales Forecasting Models</span>
-        <span class="tech-badge-amber">Decision-Making Systems</span>
-        <span class="tech-badge-amber">Python AI/ML</span>
-        <span class="tech-badge-amber">TensorFlow</span>
-        <span class="tech-badge-amber">Data Analysis</span>
-      </div>
-      <p class="mt-3 text-sm text-gray-700 dark:text-gray-300">
-        <strong class="text-amber-700 dark:text-amber-400">Investigación publicada por Springer Nature</strong> 
-        sobre modelos de IA para previsión de ventas (IBIMA 2024)
-      </p>
-    </div>
-  </div>
-
-  <div class="mt-10 p-6 bg-gradient-to-r from-blue-50 to-emerald-50 rounded-xl dark:from-blue-900/20 dark:to-emerald-900/20 border border-blue-200 dark:border-blue-800">
-    <div class="flex items-start gap-4">
-      <div class="flex-shrink-0">
-        <svg class="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-        </svg>
-      </div>
-      <div>
-        <h4 class="mb-2 font-semibold text-gray-900 dark:text-white">
-          15+ Certificaciones Oficiales
-        </h4>
-        <p class="text-sm text-gray-700 dark:text-gray-300">
-          Certificado en Oracle NetSuite, Oracle Fusion Cloud, Oracle Cloud Infrastructure, 
-          AWS Cloud Practitioner, Google Cloud, FinOps Foundation y desarrollo de software.
-          Actualización constante con las últimas tecnologías y mejores prácticas.
-        </p>
-      </div>
-    </div>
-  </div>
-</SectionContainer>
-
-<style>
-  .tech-badge {
-    @apply inline-flex items-center px-3 py-1.5 text-sm font-medium bg-gray-100 text-gray-700 rounded-lg dark:bg-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-600;
+    ))
   }
-  
-  .tech-badge-amber {
-    @apply inline-flex items-center px-3 py-1.5 text-sm font-medium bg-amber-100 text-amber-800 rounded-lg dark:bg-amber-900/30 dark:text-amber-200 border border-amber-300 dark:border-amber-700;
-  }
-</style>
+</div>

@@ -1,61 +1,62 @@
 ---
-const personalImageAlt = "Jorge Luis";
+import { identity } from "@/data/profile"
 ---
 
-<article
-  class="flex flex-col items-center justify-center gap-8 text-gray-700 dark:text-gray-300 md:flex-row"
->
-  <img
-    width="200"
-    height="200"
-    src="/Jorge.webp"
-    alt={personalImageAlt}
-    class="order-1 object-cover w-64 h-full p-1 md:order-2 rotate-3 lg:p-2 lg:w-64 aspect-square rounded-2xl bg-black/20 dark:bg-blue-500/5 ring-1 ring-black/70 dark:ring-white/20"
-    style="object-position: 50% 50%"
-  />
-  
-  <div
-    class="[&>p]:mb-4 [&>p>strong]:text-blue-600 dark:[&>p>strong]:text-blue-400 [&>p>strong]:font-semibold text-pretty order-2 md:order-1"
-  >
+<article class="grid gap-10 md:grid-cols-[1fr_14rem] md:gap-14">
+  <div class="flex flex-col gap-5 leading-relaxed text-ink-700 dark:text-ink-200 [&>p>strong]:font-semibold [&>p>strong]:text-ink-900 dark:[&>p>strong]:text-paper-50">
     <p>
-      Me llamo <strong>Jorge Luis Emmanuel Espinoza Espinoza</strong>. Soy <strong>Ingeniero de Sistemas</strong> y 
-      desarrollador de software con <strong>más de 4 años de experiencia</strong> especializado en 
-      <strong>Oracle NetSuite</strong>, <strong>DevOps</strong> y desarrollo backend.
+      Me llamo <strong>{identity.fullName}</strong>. Soy <strong>{identity.title}</strong> y
+      desarrollador de software con <strong>más de 4 años de experiencia</strong> especializado en
+      <strong>Oracle NetSuite</strong>, <strong>DevOps</strong> y desarrollo backend full stack.
     </p>
 
     <p>
-      Actualmente trabajo en <strong class="text-blue-600 dark:text-blue-400">Joyit</strong> como 
-      Desarrollador Oracle NetSuite para el cliente Biomont (sector farmacéutico), y simultáneamente en 
-      <strong class="text-blue-600 dark:text-blue-400">2win Consulting</strong> desarrollando integraciones 
-      para los sectores salud, retail y utilities, además de localización tributaria chilena y herramientas 
-      con IA. Anteriormente trabajé en <strong class="text-blue-600 dark:text-blue-400">LatamReady</strong> 
-      durante casi 4 años, donde progresé de desarrollador a especialista DevOps.
+      Actualmente trabajo en <strong>Joyit</strong> como Desarrollador Oracle NetSuite para el cliente
+      Biomont (sector farmacéutico), y simultáneamente en <strong>2win Consulting</strong> desarrollando
+      integraciones para los sectores salud, retail y utilities, además de localización tributaria
+      chilena y herramientas con IA. Anteriormente trabajé en <strong>LatamReady</strong> durante casi
+      4 años, donde progresé de desarrollador a especialista DevOps.
     </p>
 
     <p>
-      Mi expertise técnico incluye <strong>SuiteScript 2.0</strong>, desarrollo de 
-      <strong>RESTlets</strong>, integraciones vía <strong>SuiteTalk</strong>, 
-      <strong>HL7</strong> para sistemas de salud, y <strong>DevOps</strong> con 
-      Oracle Cloud (OCI), AWS y CI/CD. He logrado reducir costos operativos en un 
-      <strong class="text-emerald-600 dark:text-emerald-400">40%</strong> migrando de AWS a OCI, 
-      mejorar tiempos de reportes en <strong class="text-emerald-600 dark:text-emerald-400">30%</strong>, 
-      y aumentar eficiencia de despliegues en <strong class="text-emerald-600 dark:text-emerald-400">20%</strong>.
+      Mi expertise técnico incluye <strong>SuiteScript 2.x</strong>, desarrollo de
+      <strong>RESTlets</strong>, integraciones vía <strong>SuiteTalk</strong>,
+      <strong>HL7</strong> para sistemas de salud, y <strong>DevOps</strong> con Oracle Cloud (OCI),
+      AWS y CI/CD. He logrado reducir costos operativos en un <strong>40%</strong> migrando de AWS a
+      OCI, mejorar tiempos de reportes en un <strong>30%</strong> y aumentar la eficiencia de
+      despliegues en un <strong>20%</strong>.
     </p>
 
     <p>
-      Además de mi trabajo como desarrollador, contribuyo activamente a la <strong>investigación 
-      en Inteligencia Artificial y Machine Learning</strong>. Mi trabajo sobre modelos de IA 
-      para previsión de ventas ha sido <strong class="text-amber-600 dark:text-amber-400">publicado por 
-      Springer Nature</strong> en la colección "Artificial Intelligence and Machine Learning" 
-      (IBIMA 2024, Madrid), demostrando mi compromiso con el avance del conocimiento técnico 
-      y su aplicación práctica en entornos empresariales.
+      Además de mi trabajo como desarrollador, contribuyo activamente a la
+      <strong>investigación en Inteligencia Artificial y Machine Learning</strong>. Mi trabajo sobre
+      modelos de IA para previsión de ventas ha sido publicado por <strong>Springer Nature</strong> en
+      la colección "Artificial Intelligence and Machine Learning" (IBIMA 2024, Madrid), demostrando mi
+      compromiso con el avance del conocimiento técnico y su aplicación práctica en entornos
+      empresariales.
     </p>
 
     <p>
-      Me mantengo constantemente actualizado con <strong>15+ certificaciones oficiales</strong> 
-      de Oracle (NetSuite, Fusion Cloud, OCI), AWS, Google Cloud y desarrollo de software. 
-      Mi enfoque combina <strong>excelencia técnica</strong> con <strong>investigación académica</strong>, 
-      entregando soluciones que no solo funcionan, sino que escalan, innovan y generan valor medible.
+      Me mantengo constantemente actualizado con <strong>15+ certificaciones oficiales</strong> de
+      Oracle (NetSuite, Fusion Cloud, OCI), AWS, Google Cloud y desarrollo de software. Mi enfoque
+      combina excelencia técnica con investigación académica, entregando soluciones que no solo
+      funcionan, sino que escalan, innovan y generan valor medible.
     </p>
   </div>
+
+  <figure class="self-start md:sticky md:top-24">
+    <img
+      src={identity.photo}
+      alt={identity.photoAlt}
+      width="224"
+      height="224"
+      loading="lazy"
+      class="size-40 rounded-md object-cover object-center ring-1 ring-ink-900/10 md:size-full dark:ring-paper-50/10"
+    />
+    <figcaption
+      class="mt-3 text-center font-mono text-[11px] uppercase tracking-[0.16em] text-ink-500 dark:text-ink-400"
+    >
+      {identity.fullName}
+    </figcaption>
+  </figure>
 </article>

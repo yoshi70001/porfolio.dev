@@ -1,37 +1,73 @@
-
 ---
-import { getCollection } from "astro:content";
-import Layout from "../../layouts/Layout.astro";
-import LinkInline from "../../components/LinkInline.astro";
-import TitleSection from "../../components/TitleSection.astro";
-import SectionContainer from "../../components/SectionContainer.astro";
+import { getCollection } from "astro:content"
+import Layout from "../../layouts/Layout.astro"
+import SectionContainer from "../../components/SectionContainer.astro"
 
-const posts = await getCollection("blog");
+const posts = (await getCollection("blog")).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+)
 ---
 
-<Layout title="Blog" description="">
-  <main class="px-4">
-    <SectionContainer class="flex flex-col gap-y-4 py-16 md:py-24">
-        <TitleSection title="Blog" />
-        <ul class="flex flex-col gap-y-2">
-            {
-                posts.map((post) => (
-                    <li>
-                        <a href={`/blog/${post.id}`} class="flex flex-col gap-y-2 p-4 rounded-lg hover:bg-neutral-900/50 transition-colors duration-300 ease-in-out">
-                            <h3 class="text-xl font-semibold text-wrap">{post.data.title}</h3>
-                            <p class="text-pretty">{post.data.description}</p>
-                            <time datetime={post.data.pubDate.toISOString()} class="text-sm text-neutral-400">
-                                {post.data.pubDate.toLocaleDateString('es-ES', {
-                                    year: 'numeric',
-                                    month: 'long',
-                                    day: 'numeric'
-                                })}
-                            </time>
-                        </a>
+<Layout
+  title="Blog — Jorge Espinoza"
+  description="Artículos técnicos sobre NetSuite, SuiteScript, integraciones, OAuth 2.0 y DevOps, basados en experiencia real de proyectos empresariales."
+>
+  <main class="mx-auto w-full max-w-5xl px-6 pt-32 md:pt-40">
+    <p class="font-mono text-xs font-medium uppercase tracking-[0.2em] text-accent-700 dark:text-accent-400">
+      Blog
+    </p>
+    <h1 class="mt-3 font-display text-4xl font-semibold tracking-tight text-ink-900 md:text-5xl dark:text-paper-50">
+      Blog técnico
+    </h1>
+    <p class="mt-4 max-w-2xl leading-relaxed text-ink-600 dark:text-ink-300">
+      Apuntes y guías sobre NetSuite, SuiteScript, integraciones y DevOps.
+    </p>
+
+    <div class="mt-12 flex flex-col pb-10">
+      {
+        posts.map((post) => (
+          <a
+            href={`/blog/${post.id}`}
+            class="group grid gap-2 border-t border-paper-200 py-7 transition-colors last:border-b md:grid-cols-[9rem_1fr_auto] md:items-baseline md:gap-8 dark:border-ink-800"
+          >
+            <time
+              datetime={post.data.pubDate.toISOString()}
+              class="font-mono text-xs uppercase tracking-[0.15em] text-ink-500 dark:text-ink-400"
+            >
+              {post.data.pubDate.toLocaleDateString("es-PE", {
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+              })}
+            </time>
+
+            <div>
+              <h2 class="font-display text-xl font-semibold tracking-tight text-ink-900 transition-colors group-hover:text-accent-700 md:text-2xl dark:text-paper-50 dark:group-hover:text-accent-400">
+                {post.data.title}
+              </h2>
+              <p class="mt-1.5 leading-relaxed text-ink-600 dark:text-ink-300">
+                {post.data.description}
+              </p>
+              {post.data.tags && (
+                <ul class="mt-3 flex flex-wrap gap-1.5">
+                  {post.data.tags.map((tag) => (
+                    <li class="rounded border border-paper-300 px-2 py-0.5 font-mono text-[11px] text-ink-500 dark:border-ink-700 dark:text-ink-400">
+                      {tag}
                     </li>
-                ))
-            }
-        </ul>
-    </SectionContainer>
+                  ))}
+                </ul>
+              )}
+            </div>
+
+            <span
+              class="hidden font-mono text-sm text-accent-700 transition-transform duration-200 group-hover:translate-x-1 md:inline dark:text-accent-400"
+              aria-hidden="true"
+            >
+              →
+            </span>
+          </a>
+        ))
+      }
+    </div>
   </main>
 </Layout>

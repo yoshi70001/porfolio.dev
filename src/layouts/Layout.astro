@@ -1,5 +1,7 @@
 ---
 import "@fontsource-variable/onest"
+import "@fontsource-variable/space-grotesk"
+import "@fontsource-variable/jetbrains-mono"
 
 import Header from "../components/Header.astro"
 import Footer from "../components/Footer.astro"
@@ -11,46 +13,59 @@ interface Props {
 }
 
 const { description, title } = Astro.props
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site)
+const ogImageURL = new URL("/og.png", Astro.site)
 ---
 
 <!doctype html>
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
-    <meta name="viewport" content="width=device-width" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
+
+    <link rel="canonical" href={canonicalURL} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:site_name" content="Jorge Espinoza" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImageURL} />
+    <meta property="og:locale" content="es_PE" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageURL} />
+
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#F5F7FA" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0C101B" />
+
     <ClientRouter />
   </head>
 
-  <body class="relative text-black dark:text-white">
-    <div
-      class="absolute top-0 bottom-0 z-[-2] min-h-screen w-full bg-gray-50 dark:bg-gray-950
-      bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(217,216,255,0.5),rgba(255,255,255,0.9))]
-      dark:bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(120,119,198,0.3),rgba(255,255,255,0))]"
-    >
-    </div>
+  <body
+    class="relative flex min-h-screen flex-col bg-paper-100 text-ink-800 antialiased dark:bg-ink-950 dark:text-ink-200"
+  >
     <Header />
     <slot />
     <Footer />
+
     <style is:global>
       :root {
-        color-scheme: light dark;
+        color-scheme: light;
+      }
+
+      html.dark {
+        color-scheme: dark;
       }
 
       html {
         font-family: "Onest Variable", system-ui, sans-serif;
         scroll-behavior: smooth;
-      }
-
-      body {
-        color: rgba(17, 17, 17, 0.9);
-        display: flex;
-        flex-direction: column;
-        min-height: 100vh;
-        overscroll-behavior: none;
       }
 
       @media (prefers-reduced-motion: reduce) {
@@ -59,55 +74,51 @@ const { description, title } = Astro.props
         }
       }
 
-      @media (prefers-color-scheme: dark) {
-        body {
-          color: rgba(255, 255, 255, 0.9);
+      ::selection {
+        background-color: #2b53b0;
+        color: #f5f7fa;
+      }
+
+      html.dark ::selection {
+        background-color: #5c86dc;
+        color: #0c101b;
+      }
+
+      /* Retícula técnica sutil para la zona superior de la página */
+      .bg-grid {
+        background-image:
+          linear-gradient(to right, rgb(20 26 40 / 0.05) 1px, transparent 1px),
+          linear-gradient(to bottom, rgb(20 26 40 / 0.05) 1px, transparent 1px);
+        background-size: 44px 44px;
+        mask-image: radial-gradient(ellipse 95% 85% at 35% 0%, black 25%, transparent 78%);
+        -webkit-mask-image: radial-gradient(ellipse 95% 85% at 35% 0%, black 25%, transparent 78%);
+      }
+
+      html.dark .bg-grid {
+        background-image:
+          linear-gradient(to right, rgb(226 230 239 / 0.05) 1px, transparent 1px),
+          linear-gradient(to bottom, rgb(226 230 239 / 0.05) 1px, transparent 1px);
+      }
+
+      /* Entrada orquestada: reveals escalonados solo en el hero */
+      @keyframes rise-in {
+        from {
+          opacity: 0;
+          transform: translateY(14px);
         }
-      }
-
-      #header-nav {
-        animation: blur linear both 0.5s;
-        animation-timeline: scroll();
-        animation-range: 0 500px;
-      }
-
-      @keyframes blur {
         to {
-          backdrop-filter: blur(20px);
-          border-width: 1px;
-          border-color: rgba(0, 0, 0);
-          padding: 0.25rem 0.75rem;
-          display: flex;
-          flex-direction: row;
-          align-items: center;
-          background-color: rgb(229, 229, 229);
-          border-radius: 9999px;
+          opacity: 1;
+          transform: none;
         }
       }
 
-      @media (prefers-color-scheme: dark) {
-        @keyframes blur {
-          from {
-            border: 0px;
-          }
-          to {
-            box-shadow:
-              0px 5px 50px -5px rgba(0, 0, 0, 0.1),
-              0px 0px 0 1px rgba(0, 0, 0, 0.3);
-            background: rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(20px);
-            border-width: 1px;
-            border-color: rgba(0, 0, 0);
-            padding-left: 0.75rem;
-            padding-right: 0.75rem;
-            padding-top: 0.25rem;
-            padding-bottom: 0.25rem;
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            background-color: rgba(0, 0, 0, 0.3);
-            border-radius: 9999px;
-          }
+      .reveal {
+        animation: rise-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .reveal {
+          animation: none;
         }
       }
     </style>

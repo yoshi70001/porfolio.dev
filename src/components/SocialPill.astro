@@ -1,9 +1,20 @@
+---
+interface Props {
+  href: string
+  class?: string
+}
+
+const { href, class: className } = Astro.props
+---
+
 <a
-  {...Astro.props}
+  href={href}
   target="_blank"
   rel="noopener noreferrer"
-  role="link"
-  class="inline-flex items-center justify-center gap-2 px-4 py-1 text-gray-800 transition bg-gray-100 border border-gray-300 rounded-full dark:bg-gray-800 dark:border-gray-600 dark:text-white focus-visible:ring-yellow-500/80 text-md hover:bg-gray-900 hover:border-gray-700 hover:text-white dark:hover:bg-gray-100 dark:hover:border-gray-300 dark:hover:text-black group max-w-fit focus:outline-none focus-visible:outline-none focus-visible:ring focus-visible:ring-white focus-visible:ring-offset-2 active:bg-black"
+  class:list={[
+    "inline-flex items-center gap-2 rounded-lg border border-paper-300 px-3.5 py-2 font-mono text-xs uppercase tracking-wider text-ink-700 transition-colors duration-200 hover:border-accent-600 hover:text-accent-700 dark:border-ink-700 dark:text-ink-200 dark:hover:border-accent-400 dark:hover:text-accent-400",
+    className,
+  ]}
 >
   <slot />
 </a>

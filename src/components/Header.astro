@@ -1,120 +1,163 @@
 ---
 import ThemeToggle from "./ThemeToggle.astro"
+import { identity } from "@/data/profile"
 
 const navItems = [
-  {
-    title: "Experiencia",
-    label: "experiencia",
-    url: "/#experiencia",
-  },
-  {
-    title: "Certificaciones",
-    label: "certificaciones",
-    url: "/#certificaciones",
-  },
-  {
-    title: "Blog",
-    label: "blog",
-    url: "/#blog",
-  },
-  {
-    title: "Proyectos",
-    label: "proyectos",
-    url: "/#proyectos",
-  },
-  {
-    title: "Stack",
-    label: "stack-tecnologico",
-    url: "/#stack-tecnologico",
-  },
-  {
-    title: "Contacto",
-    label: "contacto",
-    url: "mailto:jespinozaespinoza@outlook.com",
-  },
+  { title: "Experiencia", id: "experiencia" },
+  { title: "Proyectos", id: "proyectos" },
+  { title: "Stack", id: "stack-tecnologico" },
+  { title: "Certificaciones", id: "certificaciones" },
+  { title: "Blog", id: "blog" },
+  { title: "Sobre mí", id: "sobre-mi" },
 ]
 ---
 
-<header
-  class="fixed top-0 z-10 flex items-center justify-center w-full mx-auto mt-2"
->
-  <nav
-    class="flex px-3 text-sm font-medium rounded-full text-gray-600 dark:text-gray-200 justify-center items-center"
-  >
-    {
-      navItems.map((link) => (
-        <a
-          class="relative block px-2 py-2 transition hover:text-blue-500 dark:hover:text-blue-500"
-          aria-label={link.label}
-          href={link.url}
-        >
-          {link.title}
-        </a>
-      ))
-    }
-    <ThemeToggle />
-  </nav>
+<header id="site-header" class="fixed inset-x-0 top-0 z-40 border-b border-transparent">
+  <div class="mx-auto flex h-16 max-w-5xl items-center justify-between px-6">
+    <a
+      href="/"
+      class="font-mono text-sm font-semibold tracking-tight text-ink-900 dark:text-paper-50"
+    >
+      Jorge<span class="text-accent-600 dark:text-accent-400">/</span>dev
+    </a>
+
+    <nav class="hidden items-center gap-0.5 md:flex" aria-label="Principal">
+      {
+        navItems.map((item) => (
+          <a
+            href={`/#${item.id}`}
+            data-nav={item.id}
+            class="rounded-md px-3 py-1.5 text-sm text-ink-600 transition-colors hover:text-ink-900 dark:text-ink-300 dark:hover:text-paper-50"
+          >
+            {item.title}
+          </a>
+        ))
+      }
+      <span class="mx-2 h-4 w-px bg-paper-300 dark:bg-ink-700" aria-hidden="true"></span>
+      <ThemeToggle />
+      <a
+        href="/#contacto"
+        class="ml-2 rounded-lg bg-accent-600 px-3.5 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-accent-700 dark:bg-accent-500 dark:text-ink-950 dark:hover:bg-accent-400"
+      >
+        Contacto
+      </a>
+    </nav>
+
+    <div class="flex items-center gap-1 md:hidden">
+      <ThemeToggle />
+      <button
+        id="menu-btn"
+        type="button"
+        aria-expanded="false"
+        aria-controls="mobile-menu"
+        aria-label="Abrir menú"
+        class="flex size-9 items-center justify-center rounded-lg text-ink-700 hover:bg-paper-200 dark:text-ink-200 dark:hover:bg-ink-800"
+      >
+        <svg id="icon-open" class="size-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" d="M4 7h16M4 12h16M4 17h16" />
+        </svg>
+        <svg id="icon-close" class="hidden size-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" d="M6 6l12 12M18 6L6 18" />
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <div id="mobile-menu" hidden class="border-t border-paper-200 bg-paper-100/95 backdrop-blur-md md:hidden dark:border-ink-800 dark:bg-ink-950/95">
+    <nav class="mx-auto flex max-w-5xl flex-col px-6 py-3" aria-label="Menú móvil">
+      {
+        navItems.map((item) => (
+          <a
+            href={`/#${item.id}`}
+            data-mobile-link
+            class="border-b border-paper-200 py-3 text-sm text-ink-700 last:border-b-0 dark:text-ink-200 dark:border-ink-800"
+          >
+            {item.title}
+          </a>
+        ))
+      }
+      <a
+        href="/#contacto"
+        data-mobile-link
+        class="mt-3 rounded-lg bg-accent-600 px-4 py-2.5 text-center text-sm font-semibold text-white dark:bg-accent-500 dark:text-ink-950"
+      >
+        Contacto
+      </a>
+    </nav>
+  </div>
 </header>
 
 <script>
-  document.addEventListener("astro:page-load", () => {
-    const sections = document.querySelectorAll("section")
-    const navItems = document.querySelectorAll("header nav a")
+  const initHeader = () => {
+    const header = document.getElementById("site-header")
+    const navLinks = document.querySelectorAll<HTMLAnchorElement>("a[data-nav]")
+    const sections = document.querySelectorAll<HTMLElement>("section[data-section]")
+    const menuBtn = document.getElementById("menu-btn")
+    const mobileMenu = document.getElementById("mobile-menu")
+    const iconOpen = document.getElementById("icon-open")
+    const iconClose = document.getElementById("icon-close")
 
-    const callback = (entries: any[]) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          navItems.forEach((item) => {
-            if (item.getAttribute("aria-label") == entry.target.id) {
-              item.classList.add("text-blue-500")
-            } else {
-              item.classList.remove("text-blue-500")
-            }
-          })
-        }
+    // Estado "scrolled" del header (fondo + hairline)
+    let ticking = false
+    const onScroll = () => {
+      if (ticking) return
+      ticking = true
+      requestAnimationFrame(() => {
+        header?.toggleAttribute("data-scrolled", window.scrollY > 8)
+        ticking = false
+      })
+    }
+    onScroll()
+    window.addEventListener("scroll", onScroll, { passive: true })
+
+    // Resaltado de la sección activa
+    const setActive = (id: string) => {
+      navLinks.forEach((link) => {
+        const isActive = link.dataset.nav === id
+        link.classList.toggle("text-accent-700", isActive)
+        link.classList.toggle("dark:text-accent-400", isActive)
       })
     }
 
-    const observer = new IntersectionObserver(callback, {
-      root: null,
-      rootMargin: "0px",
-      threshold: 0.3,
-    })
-
-    sections.forEach((section) => {
-      observer.observe(section)
-    })
-
-    // Cleanup function
-    document.onvisibilitychange = () => {
-      if (document.visibilityState === "hidden") {
-        observer.disconnect()
-      } else {
-        sections.forEach((section) => {
-          observer.observe(section)
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) setActive(entry.target.id)
         })
-      }
+      },
+      { rootMargin: "-30% 0px -60% 0px", threshold: 0 },
+    )
+    sections.forEach((section) => observer.observe(section))
+
+    // Menú móvil
+    const setMenu = (open: boolean) => {
+      if (!mobileMenu || !menuBtn || !iconOpen || !iconClose) return
+      mobileMenu.hidden = !open
+      menuBtn.setAttribute("aria-expanded", String(open))
+      iconOpen.classList.toggle("hidden", open)
+      iconClose.classList.toggle("hidden", !open)
     }
-  })
+
+    const onMenuClick = () => setMenu(mobileMenu?.hidden ?? false)
+    const onLinkClick = () => setMenu(false)
+
+    menuBtn?.addEventListener("click", onMenuClick)
+    document.querySelectorAll("[data-mobile-link]").forEach((link) => {
+      link.addEventListener("click", onLinkClick)
+    })
+
+    // Limpieza al navegar con view transitions
+    document.addEventListener("astro:before-swap", () => {
+      window.removeEventListener("scroll", onScroll)
+      observer.disconnect()
+    }, { once: true })
+  }
+
+  document.addEventListener("astro:page-load", initHeader)
 </script>
 
 <style>
-  nav {
-    animation: nav-shadown 1s linear both;
-    animation-timeline: scroll();
-    animation-range: 0 100px;
-  }
-
-  nav {
-    @apply dark:bg-gray-800/90 bg-white/50;
-  }
-
-  @keyframes nav-shadown {
-    0% {
-      @apply dark:bg-gray-800/0 bg-white/0;
-    }
-    to {
-      @apply shadow-lg ring-1 backdrop-blur ring-white/10;
-    }
+  header[data-scrolled] {
+    @apply border-paper-200 bg-paper-100/85 shadow-sm backdrop-blur-md dark:border-ink-800 dark:bg-ink-950/85;
   }
 </style>

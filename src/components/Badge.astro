@@ -1,10 +1,15 @@
-<div class="flex items-center ">
-<span class="relative inline-flex overflow-hidden rounded-full p-[1px]">
-  <span
-    class="absolute inset-[-1000%] animate-[spin_2s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,#51E4B8_0%,#21554E_50%,#51E4B8_100%)]"
-  ></span>
-  <div class="inline-flex items-center justify-center w-full px-3 py-1 text-sm text-green-800 bg-green-100 rounded-full cursor-pointer dark:bg-gray-800 dark:text-white/80 backdrop-blur-3xl whitespace-nowrap">
-    <slot />
-  </div>
+---
+// Chip de disponibilidad: punto pulsante + etiqueta en mono
+---
+
+<span
+  class="inline-flex items-center gap-2 rounded-full border border-paper-300 bg-paper-50 px-3 py-1 font-mono text-xs uppercase tracking-wider text-ink-700 dark:border-ink-700 dark:bg-ink-900 dark:text-ink-200"
+>
+  <span class="relative flex size-2" aria-hidden="true">
+    <span
+      class="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500 opacity-60"
+    ></span>
+    <span class="relative inline-flex size-2 rounded-full bg-emerald-500"></span>
+  </span>
+  <slot />
 </span>
-</div>

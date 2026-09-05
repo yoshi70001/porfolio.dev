@@ -1,9 +1,6 @@
 ---
-// 1. Importar 'render' desde astro:content
-import { getCollection, render } from "astro:content";
-import Layout from "../../layouts/Layout.astro";
-import TitleSection from "../../components/TitleSection.astro";
-import SectionContainer from "../../components/SectionContainer.astro";
+import { getCollection, render } from "astro:content"
+import Layout from "../../layouts/Layout.astro"
 
 export async function getStaticPaths() {
   const posts = await getCollection("blog");
@@ -15,37 +12,63 @@ export async function getStaticPaths() {
 
 const { post } = Astro.props;
 
-// 3. Usar la función render() en lugar del método post.render()
 const { Content } = await render(post);
 
 const WORDS_PER_MINUTE = 200;
-// Fallback a un string vacío en caso de que post.body no esté expuesto directamente en tu loader
-const rawContent = post.body || ""; 
-const readingTime = Math.ceil(rawContent.split(' ').length / WORDS_PER_MINUTE);
+const rawContent = post.body || "";
+const readingTime = Math.max(1, Math.ceil(rawContent.split(/\s+/).length / WORDS_PER_MINUTE));
 ---
 
-<Layout title={post.data.title} description="">
-  <main class="px-4">
-    <SectionContainer class="flex flex-col gap-y-4 pt-24 max-w-md">
-      <article class="prose prose-invert max-w-none">
-        <header>
-          <time
-            datetime={post.data.pubDate.toISOString()}
-            class="text-sm text-neutral-400"
-          >
-            Publicado el {
-              post.data.pubDate.toLocaleDateString("es-ES", {
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-              })
-            }
-            • {readingTime} min de lectura
-          </time>
-        </header>
-        <div class="divider my-4"></div>
+<Layout title={`${post.data.title} — Jorge Espinoza`} description={post.data.description}>
+  <main class="mx-auto w-full max-w-3xl px-6 pt-32 md:pt-40">
+    <a
+      href="/blog"
+      class="inline-flex items-center gap-1.5 font-mono text-xs uppercase tracking-[0.15em] text-ink-500 transition-colors hover:text-accent-700 dark:text-ink-400 dark:hover:text-accent-400"
+    >
+      ← Blog
+    </a>
+
+    <article class="mt-8 pb-10">
+      <header class="border-b border-paper-200 pb-8 dark:border-ink-800">
+        <time
+          datetime={post.data.pubDate.toISOString()}
+          class="font-mono text-xs uppercase tracking-[0.15em] text-ink-500 dark:text-ink-400"
+        >
+          {post.data.pubDate.toLocaleDateString("es-PE", {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          })}
+          · {readingTime} min de lectura
+        </time>
+        <h1
+          class="mt-4 font-display text-3xl font-semibold tracking-tight text-balance text-ink-900 md:text-4xl dark:text-paper-50"
+        >
+          {post.data.title}
+        </h1>
+        {
+          post.data.tags && (
+            <ul class="mt-5 flex flex-wrap gap-1.5">
+              {post.data.tags.map((tag) => (
+                <li class="rounded border border-paper-300 px-2 py-0.5 font-mono text-[11px] text-ink-500 dark:border-ink-700 dark:text-ink-400">
+                  {tag}
+                </li>
+              ))}
+            </ul>
+          )
+        }
+      </header>
+
+      <div
+        class="prose prose-neutral mt-8 max-w-none dark:prose-invert
+        prose-headings:font-display prose-headings:tracking-tight
+        prose-a:text-accent-700 prose-a:decoration-accent-300 prose-a:underline-offset-4 hover:prose-a:decoration-accent-600
+        dark:prose-a:text-accent-400 dark:prose-a:decoration-accent-700
+        prose-code:font-mono prose-code:text-sm prose-code:before:content-none prose-code:after:content-none
+        prose-pre:rounded-lg prose-pre:border prose-pre:border-ink-800"
+      >
         <Content />
-      </article>
-    </SectionContainer>
+      </div>
+    </article>
   </main>
 </Layout>

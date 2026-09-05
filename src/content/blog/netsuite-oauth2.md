@@ -1,12 +1,9 @@
 ---
 title: "Conexión a NetSuite con OAuth 2.0"
 pubDate: 2025-04-07
-description: "Guia rapida integracion con netsuite mediante OAuth 2.0"
+description: "Guía rápida para autorizar aplicaciones de terceros sobre NetSuite con OAuth 2.0 (Authorization Code)."
 author: "Jorge Espinoza Espinoza"
-image:
-  url: "https://astro.build/assets/press/full-logo-light.svg"
-  alt: "The Astro logo."
-tags: ["astro", "blogging", "learning in public"]
+tags: ["NetSuite", "OAuth 2.0"]
 ---
 
 # 🌐 Conexión a NetSuite con OAuth 2.0: Guía Rápida 🚀

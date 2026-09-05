@@ -1,85 +1,96 @@
 ---
-const personalImageAlt = "Jorge Luis";
-import Badge from "@/components/Badge.astro";
-import LinkedInIcon from "@/components/icons/LinkedIn.astro";
-import MailIcon from "@/components/icons/Mail.astro";
-import SocialPill from "@/components/SocialPill.astro";
+import Badge from "./Badge.astro"
+import LinkButton from "./LinkButton.astro"
+import LinkInline from "./LinkInline.astro"
+import { highlights, identity, publication } from "@/data/profile"
 ---
 
-<div class="max-w-4xl">
-  <div class="flex flex-col gap-6 mb-8 md:flex-row md:items-center">
-    <img
-      class="rounded-full shadow-xl size-20 ring-4 ring-blue-500/20"
-      src="/Jorge.webp"
-      alt={personalImageAlt}
-    />
-    <div class="flex flex-col gap-2">
-      <div class="flex flex-wrap gap-2">
-        <a
-          href="https://link.springer.com/chapter/10.1007/978-3-031-77493-5_13"
-          target="_blank"
-          rel="noopener"
-          class="transition-transform hover:scale-105"
+<div>
+  <div class="grid items-center gap-12 lg:grid-cols-[1fr_16rem]">
+    <div class="flex flex-col">
+      <div class="reveal flex flex-wrap items-center gap-x-5 gap-y-3">
+        {identity.available && <Badge>Disponible para proyectos</Badge>}
+        <span
+          class="font-mono text-[11px] uppercase tracking-[0.18em] text-ink-500 dark:text-ink-400"
         >
-          <Badge class="bg-amber-600 text-white border-amber-700">🏆 Springer Nature Published</Badge>
-        </a>
-        <a
-          href="https://linkedin.com/in/jorge-luis-emmanuel-espinoza-espinoza-b271591b9/"
-          target="_blank"
-          rel="noopener"
-          class="transition-transform hover:scale-105"
-        >
-          <Badge class="bg-blue-600 text-white border-blue-700">Disponible para Proyectos</Badge>
-        </a>
+          {identity.role}
+        </span>
       </div>
-      <p class="text-sm font-medium text-gray-600 dark:text-gray-400">
-        Actualmente en <span class="font-semibold text-blue-600 dark:text-blue-400">Joyit</span> + <span class="font-semibold text-blue-600 dark:text-blue-400">2win</span> • 
-        <span class="font-semibold text-amber-600 dark:text-amber-400">AI Researcher</span> publicado
+
+      <h1
+        class="reveal mt-7 font-display text-5xl font-semibold tracking-tight text-ink-900 sm:text-6xl dark:text-paper-50"
+        style="animation-delay: 0.08s"
+      >
+        {identity.name}
+      </h1>
+
+      <p
+        class="reveal mt-6 max-w-2xl text-lg leading-relaxed text-ink-700 dark:text-ink-200"
+        style="animation-delay: 0.16s"
+      >
+        Consultor y desarrollador con
+        <strong class="font-semibold text-ink-900 dark:text-paper-50">
+          +4 años construyendo módulos e integraciones sobre Oracle NetSuite
+        </strong>
+        para manufactura, salud y retail — y desarrollo full stack cuando el proyecto lo exige.
+        Investigación en IA/ML publicada por
+        <LinkInline href={publication.url} external>Springer Nature</LinkInline>.
       </p>
+
+      <div class="reveal mt-9 flex flex-wrap gap-3" style="animation-delay: 0.24s">
+        <LinkButton href="/#contacto" variant="primary">Hablemos de tu proyecto</LinkButton>
+        <LinkButton href="/#experiencia" variant="ghost">Ver experiencia</LinkButton>
+      </div>
     </div>
+
+    <figure class="reveal hidden justify-self-center sm:block lg:justify-self-end" style="animation-delay: 0.2s">
+      <div class="relative">
+        <img
+          src={identity.photo}
+          alt={identity.photoAlt}
+          width="256"
+          height="256"
+          class="size-56 rounded-md object-cover object-center ring-1 ring-ink-900/10 lg:size-64 dark:ring-paper-50/10"
+        />
+        <span class="absolute -left-2.5 -top-2.5 h-6 w-6 border-l-2 border-t-2 border-accent-600 dark:border-accent-400" aria-hidden="true"></span>
+        <span class="absolute -right-2.5 -top-2.5 h-6 w-6 border-r-2 border-t-2 border-accent-600 dark:border-accent-400" aria-hidden="true"></span>
+        <span class="absolute -bottom-2.5 -left-2.5 h-6 w-6 border-b-2 border-l-2 border-accent-600 dark:border-accent-400" aria-hidden="true"></span>
+        <span class="absolute -bottom-2.5 -right-2.5 h-6 w-6 border-b-2 border-r-2 border-accent-600 dark:border-accent-400" aria-hidden="true"></span>
+      </div>
+      <figcaption
+        class="mt-4 text-center font-mono text-[11px] uppercase tracking-[0.16em] text-ink-500 dark:text-ink-400"
+      >
+        {identity.title} — {identity.location}
+      </figcaption>
+    </figure>
   </div>
-  
-  <h1
-    class="text-5xl font-bold tracking-tight text-gray-900 sm:text-6xl dark:text-white"
+
+  <dl
+    class="mt-16 grid grid-cols-1 gap-x-8 gap-y-8 border-t border-paper-200 pt-10 sm:grid-cols-2 md:mt-20 lg:grid-cols-4 dark:border-ink-800"
   >
-    DevOps | NetSuite | Backend | AI Researcher
-  </h1>
-  <p
-    class="mt-6 text-xl text-gray-700 dark:text-gray-300 leading-relaxed"
-  >
-    <strong class="text-blue-600 dark:text-blue-400">Desarrollador con +4 años de experiencia</strong> en integraciones complejas, 
-    automatización de procesos y <strong class="text-amber-600 dark:text-amber-400">investigación en IA/ML publicada por Springer Nature</strong>. 
-    Especializado en NetSuite, DevOps y desarrollo backend con arquitectura limpia.
-  </p>
-  
-  <div class="flex flex-wrap gap-3 mt-6">
-    <span class="inline-flex items-center px-3 py-1.5 text-sm font-medium bg-gray-100 rounded-full text-gray-700 dark:bg-gray-800 dark:text-gray-300">
-      SuiteScript 2.0
-    </span>
-    <span class="inline-flex items-center px-3 py-1.5 text-sm font-medium bg-gray-100 rounded-full text-gray-700 dark:bg-gray-800 dark:text-gray-300">
-      DevOps & CI/CD
-    </span>
-    <span class="inline-flex items-center px-3 py-1.5 text-sm font-medium bg-gray-100 rounded-full text-gray-700 dark:bg-gray-800 dark:text-gray-300">
-      AI & Machine Learning
-    </span>
-    <span class="inline-flex items-center px-3 py-1.5 text-sm font-medium bg-gray-100 rounded-full text-gray-700 dark:bg-gray-800 dark:text-gray-300">
-      Clean Architecture
-    </span>
-  </div>
-  
-  <nav class="flex flex-wrap gap-4 mt-10">
-    <SocialPill 
-      href="mailto:jespinozaespinoza@outlook.com"
-      class="px-6 py-3 text-base font-semibold bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
-    >
-      <!-- <MailIcon class="size-5" /> -->
-      Hablemos de tu Proyecto
-    </SocialPill>
-    <SocialPill
-      href="#logros"
-      class="px-6 py-3 text-base font-semibold bg-amber-600 hover:bg-amber-700 text-white rounded-lg transition-colors"
-    >
-      Ver Mis Logros
-    </SocialPill>
-  </nav>
+    {
+      highlights.map((item) => (
+        <div class="reveal">
+          <dd class="font-display text-3xl font-semibold tracking-tight text-ink-900 dark:text-paper-50">
+            {item.href ? (
+              <a
+                href={item.href}
+                target={item.external ? "_blank" : undefined}
+                rel={item.external ? "noopener noreferrer" : undefined}
+                class="transition-colors hover:text-accent-700 dark:hover:text-accent-400"
+              >
+                {item.value}
+                {item.external && <span class="ml-1 align-super text-base" aria-hidden="true">↗</span>}
+              </a>
+            ) : (
+              item.value
+            )}
+          </dd>
+          <dt class="mt-2 max-w-[16rem] text-sm leading-snug text-ink-500 dark:text-ink-400">
+            {item.label}
+          </dt>
+        </div>
+      ))
+    }
+  </dl>
 </div>

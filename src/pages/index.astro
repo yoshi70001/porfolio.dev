@@ -1,76 +1,90 @@
 ---
-import Layout from "@/layouts/Layout.astro";
+import Layout from "@/layouts/Layout.astro"
 
-import AboutMe from "@/components/AboutMe.astro";
-import Briefcase from "@/components/icons/Briefcase.astro";
-import CodeIcon from "@/components/icons/Code.astro";
-import Experience from "@/components/Experience.astro";
-import ProfileCheck from "@/components/icons/ProfileCheck.astro";
-import Projects from "@/components/Projects.astro";
-import SectionContainer from "@/components/SectionContainer.astro";
-import Hero from "@/components/Hero.astro";
-import TitleSection from "@/components/TitleSection.astro";
-import BlogFeatured from "@/components/BlogFeatured.astro";
-import WhyMe from "@/components/WhyMe.astro";
-import TechStack from "@/components/TechStack.astro";
-import SpringerPublication from "@/components/SpringerPublication.astro";
-import Achievements from "@/components/Achievements.astro";
-import Certifications from "@/components/Certifications.astro";
+import Hero from "@/components/Hero.astro"
+import Experience from "@/components/Experience.astro"
+import Projects from "@/components/Projects.astro"
+import TechStack from "@/components/TechStack.astro"
+import Certifications from "@/components/Certifications.astro"
+import BlogFeatured from "@/components/BlogFeatured.astro"
+import AboutMe from "@/components/AboutMe.astro"
+import ContactCta from "@/components/ContactCta.astro"
+import SectionContainer from "@/components/SectionContainer.astro"
+import TitleSection from "@/components/TitleSection.astro"
+import { publication } from "@/data/profile"
 ---
 
 <Layout
-  title="Jorge Espinoza | DevOps & NetSuite Developer | AI Researcher Published by Springer"
-  description="DevOps Engineer & NetSuite Developer con investigación en IA/ML publicada por Springer Nature. 15+ certificaciones Oracle. Experiencia en Joyit, 2win y LatamReady. Especialista en integraciones, CI/CD y Machine Learning para toma de decisiones."
+  title="Jorge Espinoza — Consultor Oracle NetSuite & Full Stack Developer"
+  description="Consultor y desarrollador con +4 años de experiencia en Oracle NetSuite, DevOps y full stack. Investigación en IA/ML publicada por Springer Nature. 15+ certificaciones Oracle, AWS y Google Cloud. Integraciones, SuiteScript, CI/CD e IA para empresas."
 >
-  <main class="px-4">
-    <SectionContainer class="py-16 md:py-36">
+  <main>
+    <div class="bg-grid pointer-events-none absolute inset-x-0 top-0 z-[-1] h-[38rem]" aria-hidden="true"></div>
+
+    <!-- Hero + diferenciales -->
+    <div class="mx-auto w-full max-w-5xl px-6 pt-32 md:pt-40">
       <Hero />
-    </SectionContainer>
-  </main>
-  <div class="space-y-24">
-    <!-- Publicación Springer Nature (sección destacada especial) -->
-    <SpringerPublication />
+    </div>
 
-    <!-- Logros Destacados -->
-    <Achievements />
-
-    <!-- Experiencia Profesional -->
-    <SectionContainer id="experiencia">
-      <TitleSection>
-        <Briefcase class="size-8" />
-        Experiencia Profesional
-      </TitleSection>
+    <!-- 01 Experiencia -->
+    <SectionContainer id="experiencia" class="mt-24 md:mt-32">
+      <TitleSection
+        number="01"
+        title="Experiencia"
+        subtitle="Cinco años resolviendo problemas reales sobre Oracle NetSuite: manufactura farmacéutica, salud, retail, utilities y localización tributaria en Perú y Chile."
+      />
       <Experience />
     </SectionContainer>
 
-    <!-- Certificaciones Profesionales -->
-    <Certifications />
-
-    <!-- Blog Técnico -->
-    <BlogFeatured />
-
-    <!-- Por Qué Me Eligen -->
-    <WhyMe />
-
-    <!-- Proyectos Técnicos -->
-    <SectionContainer id="proyectos">
-      <TitleSection>
-        <CodeIcon class="size-7" />
-        Proyectos Técnicos
-      </TitleSection>
+    <!-- 02 Proyectos -->
+    <SectionContainer id="proyectos" class="mt-16 md:mt-24">
+      <TitleSection
+        number="02"
+        title="Proyectos"
+        subtitle="Proyectos personales con los que exploro nuevas tecnologías y arquitecturas fuera del ecosistema NetSuite."
+      />
       <Projects />
     </SectionContainer>
 
-    <!-- Stack Tecnológico -->
-    <TechStack />
+    <!-- 03 Stack tecnológico -->
+    <SectionContainer id="stack-tecnologico" class="mt-16 md:mt-24">
+      <TitleSection
+        number="03"
+        title="Stack tecnológico"
+        subtitle="Las herramientas con las que trabajo a diario para construir integraciones complejas y soluciones escalables."
+      />
+      <TechStack />
+    </SectionContainer>
 
-    <!-- Sobre mí -->
-    <SectionContainer id="sobre-mi">
-      <TitleSection>
-        <ProfileCheck class="size-8" />
-        Sobre mí
-      </TitleSection>
+    <!-- 04 Certificaciones -->
+    <SectionContainer id="certificaciones" class="mt-16 md:mt-24">
+      <TitleSection
+        number="04"
+        title="Certificaciones"
+        subtitle="Credenciales oficiales que validan mi expertise en Oracle Cloud, NetSuite, AWS, Google Cloud y desarrollo de software."
+      />
+      <Certifications />
+    </SectionContainer>
+
+    <!-- 05 Blog -->
+    <SectionContainer id="blog" class="mt-16 md:mt-24">
+      <TitleSection
+        number="05"
+        title="Blog técnico"
+        subtitle="Apuntes sobre NetSuite, SuiteScript, integraciones y DevOps, basados en experiencia real de proyectos."
+      />
+      <BlogFeatured />
+    </SectionContainer>
+
+    <!-- 06 Sobre mí -->
+    <SectionContainer id="sobre-mi" class="mt-16 md:mt-24">
+      <TitleSection number="06" title="Sobre mí" />
       <AboutMe />
     </SectionContainer>
-  </div>
+
+    <!-- Contacto -->
+    <SectionContainer id="contacto" class="mt-24 md:mt-32">
+      <ContactCta />
+    </SectionContainer>
+  </main>
 </Layout>

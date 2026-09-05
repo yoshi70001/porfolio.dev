@@ -1,12 +1,25 @@
 ---
-const { href } = Astro.props;
+interface Props {
+  href: string
+  variant?: "primary" | "ghost"
+  external?: boolean
+  class?: string
+}
+
+const { href, variant = "ghost", external = false, class: className } = Astro.props
 ---
 
 <a
-    target="_blank"
-    href={href}
-    role="link"
-    class="inline-flex bg-gray-100 text-gray-800 border-gray-300 items-center justify-center gap-2 px-3 py-2 space-x-2 text-base transition dark:text-white dark:bg-gray-800 border dark:border-gray-600 focus-visible:ring-yellow-500/80 text-md hover:bg-gray-800 hover:border-gray-900 group max-w-fit rounded-xl hover:text-white focus:outline-none focus-visible:outline-none focus-visible:ring focus-visible:ring-white focus-visible:ring-offset-2 active:bg-black"
+  href={href}
+  target={external ? "_blank" : undefined}
+  rel={external ? "noopener noreferrer" : undefined}
+  class:list={[
+    "inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-600 dark:focus-visible:outline-accent-400",
+    variant === "primary"
+      ? "bg-accent-600 text-white hover:bg-accent-700 dark:bg-accent-500 dark:text-ink-950 dark:hover:bg-accent-400"
+      : "border border-paper-300 text-ink-800 hover:border-ink-800 hover:bg-ink-900 hover:text-paper-50 dark:border-ink-700 dark:text-ink-100 dark:hover:border-ink-300 dark:hover:bg-ink-100 dark:hover:text-ink-950",
+    className,
+  ]}
 >
-    <slot />
+  <slot />
 </a>

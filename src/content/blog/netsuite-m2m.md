@@ -1,12 +1,9 @@
 ---
 title: "Conexión a NetSuite con Machine to Machine"
 pubDate: 2025-04-07
-description: "Guia rapida integracion con netsuite mediante Machine to machine (M2M)"
+description: "Cómo conectar aplicaciones a NetSuite con OAuth 2.0 Machine-to-Machine (Client Credentials), paso a paso."
 author: "Jorge Espinoza Espinoza"
-image:
-  url: "https://astro.build/assets/press/full-logo-light.svg"
-  alt: "The Astro logo."
-tags: ["astro", "blogging", "learning in public"]
+tags: ["NetSuite", "OAuth 2.0", "Integraciones"]
 ---
 # ⚙️ Conexión a NetSuite con OAuth 2.0: Flujo M2M (Client Credentials) 🤖
 

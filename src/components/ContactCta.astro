@@ -1,0 +1,34 @@
+---
+import LinkButton from "./LinkButton.astro"
+import SocialPill from "./SocialPill.astro"
+import GitHubIcon from "./icons/GitHub.astro"
+import LinkedInIcon from "./icons/LinkedIn.astro"
+import { identity, socials } from "@/data/profile"
+---
+
+<div class="border-t-2 border-ink-900 pt-10 md:pt-14 dark:border-paper-50">
+  <p class="font-mono text-xs font-medium uppercase tracking-[0.2em] text-accent-700 dark:text-accent-400">
+    Contacto
+  </p>
+  <h2
+    class="mt-3 max-w-2xl font-display text-4xl font-semibold tracking-tight text-ink-900 md:text-5xl dark:text-paper-50"
+  >
+    ¿Tienes un proyecto NetSuite en mente?
+  </h2>
+  <p class="mt-5 max-w-xl leading-relaxed text-ink-600 dark:text-ink-300">
+    Cuéntame qué necesitas: integraciones, módulos a medida, DevOps o una segunda opinión técnica
+    sobre tu implementación. Suelo responder en menos de 24 horas.
+  </p>
+
+  <div class="mt-9 flex flex-wrap items-center gap-3">
+    <LinkButton href={socials.email} variant="primary">Escríbeme — {identity.email}</LinkButton>
+    <SocialPill href={socials.linkedin}>
+      <LinkedInIcon class="size-4" />
+      LinkedIn
+    </SocialPill>
+    <SocialPill href={socials.github}>
+      <GitHubIcon class="size-4" />
+      GitHub
+    </SocialPill>
+  </div>
+</div>
