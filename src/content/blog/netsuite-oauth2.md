@@ -1,192 +1,378 @@
 ---
-title: "Conexión a NetSuite con OAuth 2.0"
+title: "Conexión a NetSuite con OAuth 2.0: Authorization Code Grant"
 pubDate: 2025-04-07
-description: "Guía rápida para autorizar aplicaciones de terceros sobre NetSuite con OAuth 2.0 (Authorization Code)."
+description: "Cómo autorizar una aplicación para actuar en nombre de un usuario en NetSuite con OAuth 2.0 (Authorization Code + PKCE), con ejemplos en Node.js y Python."
 author: "Jorge Espinoza Espinoza"
-tags: ["NetSuite", "OAuth 2.0"]
+tags: ["NetSuite", "OAuth 2.0", "SuiteTalk", "Integraciones"]
 ---
-
-# 🌐 Conexión a NetSuite con OAuth 2.0: Guía Rápida 🚀
-
-OAuth 2.0 es el estándar de la industria para la autorización. Permite que aplicaciones de terceros accedan a recursos de NetSuite en nombre de un usuario, sin exponer las credenciales del usuario.
-
-## 📜 Flujo General de OAuth 2.0 (Authorization Code Grant)
-
-1.  **Tu Aplicación** ➡️ Redirige al Usuario a **NetSuite** para autorización.
-2.  **Usuario** 👤 Inicia sesión en NetSuite y autoriza tu aplicación.
-3.  **NetSuite** ➡️ Redirige de vuelta a **Tu Aplicación** con un `código de autorización`.
-4.  **Tu Aplicación** 🔄 Intercambia el `código de autorización` con **NetSuite** por un `token de acceso` (y un `token de refresco`).
-5.  **Tu Aplicación** 🔑 Usa el `token de acceso` para realizar llamadas API a **NetSuite**.
 
 ---
 
-## 🛠️ Paso 1: Configuración en NetSuite (Lado del Servidor)
+OAuth 2.0 es el mecanismo correcto cuando tu aplicación necesita actuar **en nombre de un usuario**: un portal que muestra a cada cliente sus propias facturas, un add-in que consulta datos del vendedor que lo usa, un proceso que publica aprobaciones en nombre de un aprobador. Si tu caso es una integración servidor a servidor sin usuario en el medio, lo que buscas es el flujo [Client Credentials (M2M)](/blog/netsuite-m2m/).
 
-Necesitarás permisos de administrador en NetSuite.
+Un matiz que en NetSuite confunde a muchos: los **scopes no otorgan permisos sobre los datos**. El scope solo habilita la superficie de API (REST Web Services, RESTlets, SuiteAnalytics); los permisos reales de datos los hereda el token del **rol del usuario que autorizó**. Esto explica la escena clásica de "el token es válido pero me da `PERMISSION_VIOLATION`".
 
-1.  **Habilitar Características:**
+> Este post es parte de una serie sobre autenticación en NetSuite. Si aún no sabes qué método te corresponde, empieza por el [índice con la comparativa de métodos](/blog/netsuite-auth-methods/).
 
-    - Ve a `Setup > Company > Enable Features`.
-    - En la pestaña `SuiteCloud`, asegúrate de que las siguientes características estén habilitadas:
-      - `SERVER SUITESCRIPT` (si planeas usar SuiteScript)
-      - `CLIENT SUITESCRIPT` (si planeas usar SuiteScript)
-      - `SUITETALK (WEB SERVICES)`
-      - `OAUTH 2.0`
-    - Guarda los cambios.
+## Cómo funciona el flujo
 
-2.  **Crear un Registro de Integración:**
+1. Tu aplicación redirige al usuario a la página de login de NetSuite, identificándose con su Client ID.
+2. El usuario inicia sesión y autoriza (o rechaza) los scopes solicitados.
+3. NetSuite redirige a tu `redirect_uri` con un `code` de autorización (corta vida, de un solo uso).
+4. Tu aplicación canjea el `code` por un `access_token` y un `refresh_token`, autenticándose con su Client Secret.
+5. Tu aplicación usa el `access_token` (Bearer) para llamar a la API, y el `refresh_token` para renovarlo sin molestar otra vez al usuario.
 
-    - Ve a `Setup > Integration > Manage Integrations > New`.
-    - **Nombre:** Dale un nombre descriptivo a tu integración (ej: "Mi App OAuth2").
-    - **Estado:** `Enabled`.
-    - **Nota (Opcional):** Descripción de la integración.
-    - En la pestaña `Authentication`:
-      - Marca la casilla `OAUTH 2.0`.
-      - **Grant Type:** Selecciona `AUTHORIZATION CODE GRANT`.
-      - **REDIRECT URI(s):** Ingresa la(s) URL(s) a la(s) que NetSuite redirigirá al usuario después de la autorización. Esta debe ser una URL en tu aplicación que pueda manejar el código de autorización. (Ej: `https://miapp.com/oauth2/callback`)
-      - **OAUTH 2.0 SCOPES:** Selecciona los permisos necesarios para tu aplicación (ej: `REST WEB SERVICES`, `USER_PROFILE`, `TRANSACTIONS`, etc.).
-    - Guarda el registro de integración.
+## Paso 1: Configuración en NetSuite
 
-3.  **Obtener Credenciales:**
-    - Una vez guardado, NetSuite mostrará el `CLIENT ID` y `CLIENT SECRET`.
-    - **¡IMPORTANTE!** Copia y guarda de forma segura el `Client ID` y `Client Secret`. El `Client Secret` no se mostrará de nuevo.
+Necesitas permisos de administrador.
 
----
+### 1.1 Habilitar características
 
-## ⚙️ Paso 2: Flujo de Autorización (Lado de tu Aplicación Cliente)
+Ve a `Setup > Company > Enable Features`, pestaña `SuiteCloud`:
 
-Ahora, en tu aplicación, implementarás el flujo OAuth 2.0.
+- `OAUTH 2.0`
+- `REST WEB SERVICES` (o `RESTLETS`, según lo que consuma tu aplicación)
 
-### 2.1. Solicitud de Autorización del Usuario
+### 1.2 Crear el registro de integración
 
-Redirige al usuario al endpoint de autorización de NetSuite.
-Construye la URL de la siguiente manera:
+Ve a `Setup > Integration > Manage Integrations > New`:
 
-- **URL Base:** `https://<ACCOUNT_ID>.app.netsuite.com/app/login/oauth2/authorize.nl`
+- **Name:** algo descriptivo, ej. `Portal Clientes - OAuth2`.
+- **State:** `Enabled`.
+- Pestaña `Authentication`:
+  - Marca **Authorization Code Grant**.
+  - **Redirect URI:** la URL exacta de tu callback, ej. `https://miapp.com/oauth2/callback`. NetSuite la compara de forma exacta (esquema, host y path incluidos), así que define desde ya si será con o sin `www`, con o sin trailing slash.
+  - **OAuth 2.0 Scopes:** marca solo lo necesario: `REST WEB SERVICES`, `RESTLETS`, `SUITEANALYTICS WORKBOOK`... Nada de marcar todo "por si acaso".
+- Guarda. NetSuite muestra el **Client ID** y el **Client Secret**. El secreto se muestra una sola vez: guárdalo directo en tu gestor de secretos, no en un bloc de notas.
 
-  - Reemplaza `<ACCOUNT_ID>` con tu ID de cuenta de NetSuite (ej: `1234567` o `1234567_SB1` para sandbox). Puedes encontrarlo en `Setup > Company > Company Information > ACCOUNT ID`.
+### 1.3 Permiso del rol de los usuarios que autorizan
 
-- **Parámetros (Query String):**
-  - `response_type=code`
-  - `client_id=<TU_CLIENT_ID>` (El Client ID obtenido en el Paso 1.3)
-  - `redirect_uri=<TU_REDIRECT_URI>` (La misma URI que configuraste en NetSuite)
-  - `scope=<LISTA_DE_SCOPES_SEPARADOS_POR_ESPACIO>` (Ej: `rest_webservices user_profile`)
-  - `state=<VALOR_ALEATORIO_SEGURO>` (Opcional pero recomendado para prevenir CSRF)
+Detalle que se olvida con frecuencia: para autenticarse vía OAuth 2.0, el rol del usuario que autoriza la aplicación necesita el permiso **Log in Using OAuth 2.0 Tokens** (pestaña `Setup`). Sin él, el login de NetSuite rechaza el acceso con un error genérico de credenciales.
 
-**Ejemplo de URL de Autorización:**
-[https://1234567.app.netsuite.com/app/login/oauth2/authorize.nl?response_type=code&client_id=abcdef12345&redirect_uri=https%3A%2F%2Fmiapp.com%2Foauth2%2Fcallback&scope=rest_webservices%20transactions&state=xyz789](https://www.google.com/url?sa=E&q=https://1234567.app.netsuite.com/app/login/oauth2/authorize.nl?response_type=code&client_id=abcdef12345&redirect_uri=https%3A%2F%2Fmiapp.com%2Foauth2%2Fcallback&scope=rest_webservices%20transactions&state=xyz789)
+Y como el token hereda los permisos del rol de ese usuario, para aplicaciones internas mi recomendación es un **usuario de servicio** dedicado por aplicación, con un rol de privilegios mínimos. Evita autorizar con tu usuario admin: un token robado valdría tanto como tus credenciales.
 
-### 2.2. Usuario Autoriza la Aplicación
+## Paso 2: Flujo de autorización en tu aplicación
 
-El usuario será llevado a la página de login de NetSuite. Después de iniciar sesión, se le presentará una pantalla para autorizar o denegar el acceso a tu aplicación con los scopes solicitados.
+### 2.1 Construir la URL de autorización
 
-### 2.3. NetSuite Redirige con el Código de Autorización
+Redirige al usuario (un HTTP 302 desde tu backend) a:
 
-Si el usuario autoriza, NetSuite lo redirigirá a tu `redirect_uri` con:
+```
+https://<ACCOUNT_ID>.app.netsuite.com/app/login/oauth2/authorize.nl
+```
 
-- `code=<CODIGO_DE_AUTORIZACION>`
-- `state=<VALOR_STATE_ORIGINAL>` (si lo enviaste)
+con estos parámetros en el query string:
 
-**Ejemplo de Redirección:**
-`https://miapp.com/oauth2/callback?code=def456&state=xyz789`
+| Parámetro | Valor | Notas |
+| --- | --- | --- |
+| `response_type` | `code` | Fijo |
+| `client_id` | Tu Client ID | De la integración (1.2) |
+| `redirect_uri` | Tu callback | Idéntico al configurado en NetSuite |
+| `scope` | ej. `rest_webservices` | Espacio separa múltiples scopes |
+| `state` | Valor aleatorio por sesión | Verificación anti-CSRF: obligatorio, no opcional |
+| `code_challenge` | Hash SHA-256 del verifier | PKCE (ver abajo) |
+| `code_challenge_method` | `S256` | PKCE |
 
-Tu aplicación debe capturar este `code`.
+Sobre **PKCE**: NetSuite lo soporta con `S256` y viene endureciendo los requisitos de las integraciones nuevas en cada release. Genera un `code_verifier` aleatorio, envía su SHA-256 como `code_challenge`, y conserva el verifier en la sesión para el canje. Cuesta tres líneas y cierra la puerta al robo de código de autorización.
 
-### 2.4. Intercambiar el Código por Tokens de Acceso y Refresco
+Ejemplo de URL armada:
 
-Con el `code` obtenido, tu aplicación debe hacer una petición `POST` al endpoint de token de NetSuite para obtener el `access_token` y `refresh_token`.
+```text
+https://1234567.app.netsuite.com/app/login/oauth2/authorize.nl
+  ?response_type=code
+  &client_id=abcdef12345
+  &redirect_uri=https%3A%2F%2Fmiapp.com%2Foauth2%2Fcallback
+  &scope=rest_webservices
+  &state=xyz789
+  &code_challenge=E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM
+  &code_challenge_method=S256
+```
 
-- **URL del Token:** `https://<ACCOUNT_ID>.suitetalk.api.netsuite.com/services/rest/auth/oauth2/v1/token`
+### 2.2 El usuario autoriza
 
-  - Reemplaza `<ACCOUNT_ID>` con tu ID de cuenta.
+El usuario inicia sesión en NetSuite y ve la pantalla de consentimiento con los scopes solicitados. Si acepta, NetSuite redirige a tu callback:
 
-- **Método:** `POST`
-- **Headers:**
+```text
+https://miapp.com/oauth2/callback?code=def456&state=xyz789
+```
 
-  - `Content-Type: application/x-www-form-urlencoded`
-  - `Authorization: Basic <BASE64_ENCODED_CLIENT_ID:CLIENT_SECRET>`
-    - Donde `<BASE64_ENCODED_CLIENT_ID:CLIENT_SECRET>` es la cadena `CLIENT_ID:CLIENT_SECRET` codificada en Base64. (Ej: `YWJjZGVmMTIzNDU6c2VjcmV0eHl6Nzg5`)
+Valida que el `state` devuelto coincida con el de la sesión antes de tocar el `code`.
 
-- **Cuerpo de la Petición (form-urlencoded):**
-  - `grant_type=authorization_code`
-  - `code=<CODIGO_DE_AUTORIZACION_RECIBIDO>`
-  - `redirect_uri=<TU_REDIRECT_URI>`
+### 2.3 Canjear el code por tokens
 
-**Ejemplo de Petición (usando cURL):**
+`POST` al endpoint de token con Basic auth (`client_id:client_secret` en Base64):
 
-````bash
+```bash
 curl -X POST \
   'https://1234567.suitetalk.api.netsuite.com/services/rest/auth/oauth2/v1/token' \
   -H 'Content-Type: application/x-www-form-urlencoded' \
-  -H 'Authorization: Basic YWJjZGVmMTIzNDU6c2VjcmV0eHl6Nzg5' \
-  -d 'grant_type=authorization_code&code=def456&redirect_uri=https%3A%2F%2Fmiapp.com%2Foauth2%2Fcallback'```
-````
+  -H 'Authorization: Basic <BASE64_CLIENT_ID:CLIENT_SECRET>' \
+  --data-urlencode 'grant_type=authorization_code' \
+  --data-urlencode 'code=def456' \
+  --data-urlencode 'redirect_uri=https://miapp.com/oauth2/callback' \
+  --data-urlencode 'code_verifier=<EL_VERIFIER_DE_LA_SESION>'
+```
 
-**_Respuesta Exitosa (JSON):_**
+Respuesta exitosa:
 
-```bash
+```json
 {
   "access_token": "an_access_token_string",
   "refresh_token": "a_refresh_token_string",
-  "expires_in": 3600, // Segundos hasta que el access_token expire (generalmente 1 hora)
+  "expires_in": 3600,
   "token_type": "Bearer"
 }
 ```
 
-> **¡IMPORTANTE!** Almacena de forma segura el access_token y el refresh_token. El refresh_token se usa para obtener nuevos access_token cuando el actual expire, sin necesidad de que el usuario vuelva a autorizar.
+El `access_token` vive 1 hora. El `refresh_token` te permite renovarlo sin nueva autorización — trátalo como una credencial de larga vida, porque lo es.
 
----
+## Paso 3: Implementación de referencia
 
-## 🚀 Paso 3: Realizar Peticiones API a NetSuite
+### Node.js (Express)
 
-Usa el access_token obtenido para autorizar tus llamadas a la API REST de NetSuite.
+```js
+import crypto from "node:crypto";
+import express from "express";
+import session from "express-session";
 
-- **Header de Autorización:** Authorization: Bearer <ACCESS_TOKEN>
-- **Header Adicional (para REST):** Prefer: transient (opcional, pero puede ayudar con la concurrencia y el versionado)
+const CLIENT_ID = process.env.NETSUITE_CLIENT_ID;
+const CLIENT_SECRET = process.env.NETSUITE_CLIENT_SECRET;
+const ACCOUNT_ID = process.env.NETSUITE_ACCOUNT_ID; // ej. 1234567 o 1234567_SB1
+const REDIRECT_URI = "https://miapp.com/oauth2/callback";
+const SCOPES = "rest_webservices";
 
-**Ejemplo de Petición API (usando cURL para obtener un registro de cliente):**
+const AUTHORIZE_URL = `https://${ACCOUNT_ID}.app.netsuite.com/app/login/oauth2/authorize.nl`;
+const TOKEN_URL = `https://${ACCOUNT_ID}.suitetalk.api.netsuite.com/services/rest/auth/oauth2/v1/token`;
+
+const app = express();
+app.use(session({ secret: process.env.SESSION_SECRET, cookie: { httpOnly: true, secure: true } }));
+
+const basicAuth = () =>
+  `Basic ${Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString("base64")}`;
+
+// 1. Iniciar el flujo
+app.get("/login", (req, res) => {
+  const state = crypto.randomBytes(16).toString("hex");
+  const verifier = crypto.randomBytes(32).toString("base64url");
+  const challenge = crypto.createHash("sha256").update(verifier).digest("base64url");
+
+  req.session.oauth = { state, verifier };
+
+  const params = new URLSearchParams({
+    response_type: "code",
+    client_id: CLIENT_ID,
+    redirect_uri: REDIRECT_URI,
+    scope: SCOPES,
+    state,
+    code_challenge: challenge,
+    code_challenge_method: "S256",
+  });
+
+  res.redirect(`${AUTHORIZE_URL}?${params}`);
+});
+
+// 2. Callback: validar state y canjear el code
+app.get("/oauth2/callback", async (req, res) => {
+  const { code, state } = req.query;
+  const oauth = req.session.oauth;
+
+  if (!oauth || state !== oauth.state) {
+    return res.status(400).send("state inválido (posible CSRF)");
+  }
+
+  const response = await fetch(TOKEN_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      Authorization: basicAuth(),
+    },
+    body: new URLSearchParams({
+      grant_type: "authorization_code",
+      code,
+      redirect_uri: REDIRECT_URI,
+      code_verifier: oauth.verifier,
+    }),
+  });
+
+  if (!response.ok) return res.status(502).send(await response.text());
+
+  const tokens = await response.json(); // { access_token, refresh_token, expires_in, ... }
+  // Persistir tokens asociados al usuario: BD con cifrado o gestor de secretos.
+  // Nunca exponer el refresh_token al navegador.
+  res.send("Autorización completada");
+});
+```
+
+### Python (Flask)
+
+```python
+import base64
+import hashlib
+import os
+import secrets
+from urllib.parse import urlencode
+
+import requests
+from flask import Flask, redirect, request, session
+
+app = Flask(__name__)
+app.secret_key = os.environ["FLASK_SECRET"]
+
+CLIENT_ID = os.environ["NETSUITE_CLIENT_ID"]
+CLIENT_SECRET = os.environ["NETSUITE_CLIENT_SECRET"]
+ACCOUNT_ID = os.environ["NETSUITE_ACCOUNT_ID"]      # ej. 1234567 o 1234567_SB1
+REDIRECT_URI = "https://miapp.com/oauth2/callback"
+SCOPES = "rest_webservices"
+
+AUTHORIZE_URL = f"https://{ACCOUNT_ID}.app.netsuite.com/app/login/oauth2/authorize.nl"
+TOKEN_URL = f"https://{ACCOUNT_ID}.suitetalk.api.netsuite.com/services/rest/auth/oauth2/v1/token"
+
+
+@app.route("/login")
+def login():
+    state = secrets.token_urlsafe(16)
+    verifier = secrets.token_urlsafe(48)
+    challenge = (
+        base64.urlsafe_b64encode(hashlib.sha256(verifier.encode()).digest())
+        .rstrip(b"=")
+        .decode()
+    )
+    session.update(state=state, verifier=verifier)
+
+    params = {
+        "response_type": "code",
+        "client_id": CLIENT_ID,
+        "redirect_uri": REDIRECT_URI,
+        "scope": SCOPES,
+        "state": state,
+        "code_challenge": challenge,
+        "code_challenge_method": "S256",
+    }
+    return redirect(f"{AUTHORIZE_URL}?{urlencode(params)}")
+
+
+@app.route("/oauth2/callback")
+def callback():
+    if request.args.get("state") != session.get("state"):
+        return "state inválido (posible CSRF)", 400
+
+    basic = base64.b64encode(f"{CLIENT_ID}:{CLIENT_SECRET}".encode()).decode()
+    res = requests.post(
+        TOKEN_URL,
+        headers={
+            "Content-Type": "application/x-www-form-urlencoded",
+            "Authorization": f"Basic {basic}",
+        },
+        data={
+            "grant_type": "authorization_code",
+            "code": request.args["code"],
+            "redirect_uri": REDIRECT_URI,
+            "code_verifier": session["verifier"],
+        },
+        timeout=30,
+    )
+    res.raise_for_status()
+    tokens = res.json()  # { access_token, refresh_token, expires_in, ... }
+    # Persistir tokens asociados al usuario: BD con cifrado o gestor de secretos.
+    return "Autorización completada"
+```
+
+## Paso 4: Consumir la API
+
+El access token viaja como Bearer. Ejemplo leyendo un cliente:
 
 ```bash
 curl -X GET \
-  'https://<ACCOUNT_ID>.suitetalk.api.netsuite.com/services/rest/record/v1/customer/123' \
-  -H 'Authorization: Bearer an_access_token_string' \
+  'https://1234567.suitetalk.api.netsuite.com/services/rest/record/v1/customer/123' \
+  -H "Authorization: Bearer <ACCESS_TOKEN>" \
   -H 'Prefer: transient'
 ```
 
-Reemplaza <ACCOUNT_ID> y el ID del cliente (123).
+Recuerda: la respuesta dependerá de los permisos del rol del usuario que autorizó, no de los scopes del token.
 
-## 🔄 Paso 4: Refrescar el Token de Acceso (Opcional pero Recomendado)
+## Paso 5: Renovar el token
 
-Cuando el access_token expire, usa el refresh_token para obtener uno nuevo.
+Cuando el access token expire (o mejor, antes: con margen de 1-2 minutos), usa el refresh token:
 
-- **URL del Token:** https://<ACCOUNT_ID>.suitetalk.api.netsuite.com/services/rest/auth/oauth2/v1/token
-- **Método:** POST
-- **Headers:**
-
-  - Content-Type: application/x-www-form-urlencoded
-  - Authorization: Basic <BASE64_ENCODED_CLIENT_ID:CLIENT_SECRET>
-
-- **Cuerpo de la Petición (form-urlencoded):**
-
-  - grant_type=refresh_token
-  - refresh_token=<TU_REFRESH_TOKEN_GUARDADO>
-
-**Respuesta Exitosa (JSON):**
-
+```bash
+curl -X POST \
+  'https://1234567.suitetalk.api.netsuite.com/services/rest/auth/oauth2/v1/token' \
+  -H 'Content-Type: application/x-www-form-urlencoded' \
+  -H 'Authorization: Basic <BASE64_CLIENT_ID:CLIENT_SECRET>' \
+  --data-urlencode 'grant_type=refresh_token' \
+  --data-urlencode 'refresh_token=<TU_REFRESH_TOKEN>'
 ```
-{
-  "access_token": "a_new_access_token_string",
-  "expires_in": 3600,
-  "token_type": "Bearer"
-  // NetSuite puede o no devolver un nuevo refresh_token. Si lo hace, actualiza el que tienes guardado.
+
+Dos detalles de la respuesta:
+
+- NetSuite suele devolver un `refresh_token` nuevo en cada renovación (**rotación**). Cuando ocurra, persiste el nuevo y descarta el anterior — si sigues usando el viejo, tarde o temprano fallará.
+- Los refresh tokens no son eternos: expiran por tiempo o por inactividad. Cuando eso pase, el endpoint responde `invalid_grant` y la única salida es repetir el flujo completo de autorización. Diseña esa re-autorización como un flujo normal, no como una excepción.
+
+Helper en Node.js:
+
+```js
+export async function refreshAccessToken(refreshToken) {
+  const response = await fetch(TOKEN_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      Authorization: basicAuth(),
+    },
+    body: new URLSearchParams({
+      grant_type: "refresh_token",
+      refresh_token: refreshToken,
+    }),
+  });
+
+  if (!response.ok) {
+    // invalid_grant => refresh token expirado/revocado: requerir re-autorización
+    throw new Error(`Error renovando token: ${await response.text()}`);
+  }
+  return response.json(); // puede incluir refresh_token nuevo: persistirlo
 }
 ```
 
-## 💡 Consideraciones Importantes
+Y en Python:
 
-- **Seguridad del Client Secret:** Trata el Client Secret como una contraseña. No lo expongas en el código del lado del cliente (frontend).
-- **Almacenamiento de Tokens:** Almacena los access_token y refresh_token de forma segura (ej: base de datos encriptada, gestor de secretos).
-- **Manejo de Errores:** Implementa un manejo robusto de errores para todos los pasos del flujo OAuth y las llamadas API.
-- **Parámetro state:** Úsalo para mitigar ataques CSRF. Genera un valor aleatorio antes de redirigir al usuario, guárdalo en la sesión del usuario, y verifica que el valor devuelto por NetSuite coincida.
-- **Vigencia de Tokens:** Los access_token suelen tener una vida corta (1 hora). Los refresh_token suelen tener una vida más larga (ej: 7 días, o hasta ser revocados), pero esto puede variar. Consulta la documentación de NetSuite.
-- **Scopes:** Solicita solo los scopes (permisos) que tu aplicación realmente necesita.
+```python
+def refresh_access_token(refresh_token):
+    basic = base64.b64encode(f"{CLIENT_ID}:{CLIENT_SECRET}".encode()).decode()
+    res = requests.post(
+        TOKEN_URL,
+        headers={"Authorization": f"Basic {basic}"},
+        data={"grant_type": "refresh_token", "refresh_token": refresh_token},
+        timeout=30,
+    )
+    if res.status_code != 200:
+        # invalid_grant => refresh token expirado/revocado: requerir re-autorización
+        raise RuntimeError(f"Error renovando token: {res.text}")
+    return res.json()  # puede incluir refresh_token nuevo: persistirlo
+```
+
+## Troubleshooting: errores comunes
+
+| Error | Causa probable | Solución |
+| --- | --- | --- |
+| Login rechazado con error de credenciales | El rol del usuario no tiene **Log in Using OAuth 2.0 Tokens** | Agrega el permiso al rol (1.3) |
+| `redirect_uri` mismatch / `INVALID_REDIRECT_URI` | El callback no coincide carácter por carácter con el configurado | Compara esquema, host, puerto, path y trailing slash |
+| `400 invalid_grant` al canjear el code | El `code` ya fue usado, expiró, o el `redirect_uri` del canje difiere del de la autorización | El code es de un solo uso y vive minutos; canjéalo inmediatamente con la misma URI |
+| `400 INVALID_CLIENT` | Basic auth malformado | Es Base64 de `client_id:client_secret` (con los dos puntos), sin espacios extra |
+| `state` inválido en el callback | Sesión perdida entre `/login` y el callback (cookies, múltiples tabs) | Revisa la configuración de sesión; nunca deshabilites la validación de state |
+| `PERMISSION_VIOLATION` en llamadas API | El rol del usuario no tiene permiso sobre ese registro/transacción | Ajusta el rol del usuario que autorizó; los scopes no otorgan permisos de datos |
+| `401` tras ~1 hora de funcionamiento | Access token expirado | Renueva con el refresh token (Paso 5), idealmente de forma proactiva |
+| Renovación falla con `invalid_grant` | Refresh token expirado o revocado | Repetir el flujo de autorización completo |
+
+## Consideraciones de seguridad
+
+- **Client Secret solo en el backend.** Jamás en código de frontend ni en apps móviles distribuidas. Si tu cliente es público (SPA sin backend), el canje debe vivir en un BFF.
+- **PKCE siempre**, incluso siendo cliente confidencial. Es gratis y es la dirección en la que va NetSuite.
+- **`state` en cada inicio de flujo**, validado en el callback. Un `state` fijo o reutilizable anula la protección CSRF.
+- **Tokens en reposo:** cifrados en base de datos o en un gestor de secretos; el refresh token con el mismo cuidado que una contraseña. Al navegador nunca le entregues nada más que indicadores de sesión propios.
+- **Usuario de servicio con rol mínimo** para apps internas, en lugar de credenciales de personas. Revisa periódicamente qué integraciones están autorizadas y revoca las muertas (`Manage Integrations` muestra el uso; los tokens también pueden revocarse desde ahí).
+- **Manejo de revocación:** si un integrador deja el proyecto, revoca sus tokens. Un refresh token sin dueño vigente es deuda de seguridad.
+
+## Cierre
+
+El Authorization Code Grant es más largo que un simple login con usuario y contraseña, y esa longitud es exactamente el punto: ninguna credencial viaja entre tu app y NetSuite, el usuario puede revocar el acceso sin cambiar su contraseña, y tú puedes auditar y rotar todo de forma independiente.
+
+Si tu integración no necesita identidad de usuario —sincronizaciones, jobs, middleware— el flujo [Client Credentials (M2M)](/blog/netsuite-m2m/) es más simple de operar. Entre ambos cubres prácticamente cualquier integración contra NetSuite.
