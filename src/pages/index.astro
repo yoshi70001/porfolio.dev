@@ -4,6 +4,7 @@ import Layout from "@/layouts/Layout.astro"
 import Hero from "@/components/Hero.astro"
 import Experience from "@/components/Experience.astro"
 import Projects from "@/components/Projects.astro"
+import Clients from "@/components/Clients.astro"
 import TechStack from "@/components/TechStack.astro"
 import Certifications from "@/components/Certifications.astro"
 import BlogFeatured from "@/components/BlogFeatured.astro"
@@ -11,14 +12,13 @@ import AboutMe from "@/components/AboutMe.astro"
 import ContactCta from "@/components/ContactCta.astro"
 import SectionContainer from "@/components/SectionContainer.astro"
 import TitleSection from "@/components/TitleSection.astro"
-import { publication } from "@/data/profile"
 ---
 
 <Layout
   title="Jorge Espinoza — Consultor Oracle NetSuite & Full Stack Developer"
   description="Consultor y desarrollador con +4 años de experiencia en Oracle NetSuite, DevOps y full stack. Investigación en IA/ML publicada por Springer Nature. 15+ certificaciones Oracle, AWS y Google Cloud. Integraciones, SuiteScript, CI/CD e IA para empresas."
 >
-  <main>
+  <main id="main-content">
     <div class="bg-grid pointer-events-none absolute inset-x-0 top-0 z-[-1] h-[38rem]" aria-hidden="true"></div>
 
     <!-- Hero + diferenciales -->
@@ -45,6 +45,11 @@ import { publication } from "@/data/profile"
       />
       <Projects />
     </SectionContainer>
+
+    <!-- Prueba social -->
+    <div class="mx-auto mt-16 w-full max-w-5xl px-6 md:mt-24">
+      <Clients />
+    </div>
 
     <!-- 03 Stack tecnológico -->
     <SectionContainer id="stack-tecnologico" class="mt-16 md:mt-24">

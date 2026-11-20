@@ -2,7 +2,14 @@
 import Badge from "./Badge.astro"
 import LinkButton from "./LinkButton.astro"
 import LinkInline from "./LinkInline.astro"
-import { highlights, identity, publication } from "@/data/profile"
+import LinkedInIcon from "./icons/LinkedIn.astro"
+import DownloadIcon from "./icons/Download.astro"
+import { highlights, identity, publication, socials } from "@/data/profile"
+const parseCount = (value: string) => {
+  const match = value.match(/^(\+?)(\d+)(.*)$/)
+  if (!match || value.startsWith("Springer")) return null
+  return { prefix: match[1], target: Number(match[2]), suffix: match[3] }
+}
 ---
 
 <div>
@@ -40,6 +47,14 @@ import { highlights, identity, publication } from "@/data/profile"
       <div class="reveal mt-9 flex flex-wrap gap-3" style="animation-delay: 0.24s">
         <LinkButton href="/#contacto" variant="primary">Hablemos de tu proyecto</LinkButton>
         <LinkButton href="/#experiencia" variant="ghost">Ver experiencia</LinkButton>
+        <LinkButton href={socials.linkedin} variant="ghost" external>
+          <LinkedInIcon class="size-4" />
+          LinkedIn
+        </LinkButton>
+        <LinkButton href={identity.cv} variant="ghost" download>
+          <DownloadIcon class="size-4" />
+          Descargar CV
+        </LinkButton>
       </div>
     </div>
 
@@ -50,6 +65,8 @@ import { highlights, identity, publication } from "@/data/profile"
           alt={identity.photoAlt}
           width="256"
           height="256"
+          fetchpriority="high"
+          decoding="async"
           class="size-56 rounded-md object-cover object-center ring-1 ring-ink-900/10 lg:size-64 dark:ring-paper-50/10"
         />
         <span class="absolute -left-2.5 -top-2.5 h-6 w-6 border-l-2 border-t-2 border-accent-600 dark:border-accent-400" aria-hidden="true"></span>
@@ -69,28 +86,87 @@ import { highlights, identity, publication } from "@/data/profile"
     class="mt-16 grid grid-cols-1 gap-x-8 gap-y-8 border-t border-paper-200 pt-10 sm:grid-cols-2 md:mt-20 lg:grid-cols-4 dark:border-ink-800"
   >
     {
-      highlights.map((item) => (
-        <div class="reveal">
-          <dd class="font-display text-3xl font-semibold tracking-tight text-ink-900 dark:text-paper-50">
-            {item.href ? (
-              <a
-                href={item.href}
-                target={item.external ? "_blank" : undefined}
-                rel={item.external ? "noopener noreferrer" : undefined}
-                class="transition-colors hover:text-accent-700 dark:hover:text-accent-400"
-              >
-                {item.value}
-                {item.external && <span class="ml-1 align-super text-base" aria-hidden="true">↗</span>}
-              </a>
-            ) : (
-              item.value
-            )}
-          </dd>
-          <dt class="mt-2 max-w-[16rem] text-sm leading-snug text-ink-500 dark:text-ink-400">
-            {item.label}
-          </dt>
-        </div>
-      ))
+      highlights.map((item) => {
+        const count = parseCount(item.value)
+        const valueNode = count ? (
+          <span
+            data-count={count.target}
+            data-prefix={count.prefix}
+            data-suffix={count.suffix}
+          >
+            {item.value}
+          </span>
+        ) : (
+          item.value
+        )
+
+        return (
+          <div class="reveal" style="animation-delay: 0.3s">
+            <dd class="font-display text-3xl font-semibold tracking-tight text-ink-900 dark:text-paper-50">
+              {item.href ? (
+                <a
+                  href={item.href}
+                  target={item.external ? "_blank" : undefined}
+                  rel={item.external ? "noopener noreferrer" : undefined}
+                  class="transition-colors hover:text-accent-700 dark:hover:text-accent-400"
+                >
+                  {valueNode}
+                  {item.external && <span class="ml-1 align-super text-base" aria-hidden="true">↗</span>}
+                </a>
+              ) : (
+                valueNode
+              )}
+            </dd>
+            <dt class="mt-2 max-w-[16rem] text-sm leading-snug text-ink-500 dark:text-ink-400">
+              {item.label}
+            </dt>
+          </div>
+        )
+      })
     }
   </dl>
 </div>
+
+<script>
+  const initCounters = () => {
+    const elements = document.querySelectorAll<HTMLElement>("[data-count]")
+    if (!elements.length) return
+
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches
+
+    elements.forEach((el, index) => {
+      if (el.dataset.counted === "true") return
+      el.dataset.counted = "true"
+
+      const target = Number(el.dataset.count ?? "0")
+      const prefix = el.dataset.prefix ?? ""
+      const suffix = el.dataset.suffix ?? ""
+
+      if (reduced || Number.isNaN(target)) {
+        el.textContent = `${prefix}${target}${suffix}`
+        return
+      }
+
+      el.textContent = `${prefix}0${suffix}`
+      const duration = 1200
+      const delay = 450 + index * 120
+      const start = performance.now() + delay
+
+      const tick = (now: number) => {
+        const elapsed = now - start
+        if (elapsed < 0) {
+          requestAnimationFrame(tick)
+          return
+        }
+        const t = Math.min(1, elapsed / duration)
+        const eased = 1 - Math.pow(1 - t, 3)
+        el.textContent = `${prefix}${Math.round(target * eased)}${suffix}`
+        if (t < 1) requestAnimationFrame(tick)
+      }
+
+      requestAnimationFrame(tick)
+    })
+  }
+
+  document.addEventListener("astro:page-load", initCounters)
+</script>

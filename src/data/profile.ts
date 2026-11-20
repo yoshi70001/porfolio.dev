@@ -12,6 +12,7 @@ export const identity = {
   location: "Perú · Remoto",
   photo: "/Jorge.webp",
   photoAlt: "Retrato de Jorge Espinoza",
+  cv: "/CV-Jorge-Espinoza.pdf",
   available: true,
 } as const;
 
@@ -329,6 +330,18 @@ export interface Project {
   repo?: string;
 }
 
+/** Empresas y productos con los que ha colaborado directamente (según experiencia) */
+export const collaborators: string[] = [
+  "Biomont",
+  "Andes Salud",
+  "Kuntur Pharma",
+  "Chilquinta",
+  "Multivende",
+  "GEO POS",
+  "Bebesit",
+  "LatamReady",
+];
+
 export const projects: Project[] = [
   {
     name: "HardSub Extractor",
@@ -346,7 +359,6 @@ export const projects: Project[] = [
     image: "/projects/animeflvWrapper.webp",
     imageAlt: "Interfaz de Animeflv Wrapper",
     tech: ["Express", "EJS", "Cheerio"],
-    url: "https://jespinoza.mooo.com/anime/",
     repo: "https://github.com/yoshi70001/animeflvWrapper",
   },
   {
@@ -356,7 +368,6 @@ export const projects: Project[] = [
     image: "/projects/screenShot.webp",
     imageAlt: "Interfaz de ScreenShot Site",
     tech: ["Express", "Puppeteer"],
-    url: "https://jespinoza.mooo.com/screenshot/",
     repo: "https://github.com/yoshi70001/screenshot-site",
   },
 ];

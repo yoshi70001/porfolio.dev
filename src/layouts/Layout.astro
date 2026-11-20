@@ -1,21 +1,42 @@
 ---
-import "@fontsource-variable/onest"
-import "@fontsource-variable/space-grotesk"
-import "@fontsource-variable/jetbrains-mono"
+import "@/styles/fonts.css"
 
 import Header from "../components/Header.astro"
 import Footer from "../components/Footer.astro"
 import { ClientRouter } from "astro:transitions";
+import { identity, socials } from "@/data/profile"
 
 interface Props {
   title: string
   description: string
+  jsonLd?: Record<string, unknown>
 }
 
-const { description, title } = Astro.props
+const { description, title, jsonLd } = Astro.props
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site)
 const ogImageURL = new URL("/og.png", Astro.site)
+
+const personJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: identity.name,
+  alternateName: identity.fullName,
+  jobTitle: "Consultor Oracle NetSuite & Full Stack Developer",
+  description,
+  url: canonicalURL.href,
+  image: new URL(identity.photo, Astro.site).href,
+  email: `mailto:${identity.email}`,
+  address: {
+    "@type": "PostalAddress",
+    addressCountry: "PE",
+  },
+  sameAs: [socials.linkedin, socials.github],
+}
+
+const structuredData = jsonLd ? [personJsonLd, jsonLd] : [personJsonLd]
+
+const cfAnalyticsToken = import.meta.env.PUBLIC_CF_ANALYTICS_TOKEN
 ---
 
 <!doctype html>
@@ -28,6 +49,10 @@ const ogImageURL = new URL("/og.png", Astro.site)
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
 
+    <link rel="preload" href="/fonts/onest-latin.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/space-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/jetbrains-mono-latin.woff2" as="font" type="font/woff2" crossorigin />
+
     <link rel="canonical" href={canonicalURL} />
     <meta property="og:type" content="website" />
     <meta property="og:url" content={canonicalURL} />
@@ -35,6 +60,8 @@ const ogImageURL = new URL("/og.png", Astro.site)
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:image" content={ogImageURL} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
     <meta property="og:locale" content="es_PE" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
@@ -44,12 +71,32 @@ const ogImageURL = new URL("/og.png", Astro.site)
     <meta name="theme-color" media="(prefers-color-scheme: light)" content="#F5F7FA" />
     <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0C101B" />
 
+    <script type="application/ld+json" set:html={JSON.stringify(structuredData)} />
+    <script is:inline>document.documentElement.classList.add("has-js")</script>
+
+    {
+      cfAnalyticsToken && (
+        <script
+          is:inline
+          defer
+          src="https://static.cloudflareinsights.com/beacon.min.js"
+          data-cf-beacon={`{"token": "${cfAnalyticsToken}"}`}
+        />
+      )
+    }
+
     <ClientRouter />
   </head>
 
   <body
     class="relative flex min-h-screen flex-col bg-paper-100 text-ink-800 antialiased dark:bg-ink-950 dark:text-ink-200"
   >
+    <a
+      href="#main-content"
+      class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-accent-600 focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-white dark:focus:bg-accent-500 dark:focus:text-ink-950"
+    >
+      Saltar al contenido
+    </a>
     <Header />
     <slot />
     <Footer />
@@ -121,6 +168,87 @@ const ogImageURL = new URL("/og.png", Astro.site)
           animation: none;
         }
       }
+
+      /* Reveal on scroll: oculto solo cuando hay JS; si falla, el contenido queda visible */
+      .has-js [data-reveal] {
+        opacity: 0;
+        transform: translateY(18px);
+        transition:
+          opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+          transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+      }
+
+      .has-js [data-reveal].is-visible {
+        opacity: 1;
+        transform: none;
+      }
+
+      /* Focus visible consistente en todos los interactivos */
+      a:focus-visible,
+      button:focus-visible,
+      input:focus-visible,
+      textarea:focus-visible,
+      select:focus-visible {
+        outline: 2px solid #2b53b0;
+        outline-offset: 2px;
+      }
+
+      html.dark a:focus-visible,
+      html.dark button:focus-visible,
+      html.dark input:focus-visible,
+      html.dark textarea:focus-visible,
+      html.dark select:focus-visible {
+        outline-color: #5c86dc;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .has-js [data-reveal] {
+          opacity: 1;
+          transform: none;
+          transition: none;
+        }
+
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
     </style>
+
+    <script>
+      const initReveals = () => {
+        const elements = document.querySelectorAll<HTMLElement>("[data-reveal]:not(.is-visible)")
+        if (!("IntersectionObserver" in window)) {
+          elements.forEach((el) => el.classList.add("is-visible"))
+          return
+        }
+
+        const observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                entry.target.classList.add("is-visible")
+                observer.unobserve(entry.target)
+              }
+            })
+          },
+          { rootMargin: "0px 0px -8% 0px", threshold: 0.08 },
+        )
+
+        elements.forEach((el) => observer.observe(el))
+
+        document.addEventListener(
+          "astro:before-swap",
+          () => observer.disconnect(),
+          { once: true },
+        )
+      }
+
+      document.addEventListener("astro:page-load", initReveals)
+    </script>
   </body>
 </html>
+

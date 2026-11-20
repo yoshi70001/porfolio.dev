@@ -74,7 +74,10 @@ Construye la URL de la siguiente manera:
   - `state=<VALOR_ALEATORIO_SEGURO>` (Opcional pero recomendado para prevenir CSRF)
 
 **Ejemplo de URL de Autorización:**
-[https://1234567.app.netsuite.com/app/login/oauth2/authorize.nl?response_type=code&client_id=abcdef12345&redirect_uri=https%3A%2F%2Fmiapp.com%2Foauth2%2Fcallback&scope=rest_webservices%20transactions&state=xyz789](https://www.google.com/url?sa=E&q=https://1234567.app.netsuite.com/app/login/oauth2/authorize.nl?response_type=code&client_id=abcdef12345&redirect_uri=https%3A%2F%2Fmiapp.com%2Foauth2%2Fcallback&scope=rest_webservices%20transactions&state=xyz789)
+
+```
+https://1234567.app.netsuite.com/app/login/oauth2/authorize.nl?response_type=code&client_id=abcdef12345&redirect_uri=https%3A%2F%2Fmiapp.com%2Foauth2%2Fcallback&scope=rest_webservices%20transactions&state=xyz789
+```
 
 ### 2.2. Usuario Autoriza la Aplicación
 

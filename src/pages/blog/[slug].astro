@@ -17,10 +17,29 @@ const { Content } = await render(post);
 const WORDS_PER_MINUTE = 200;
 const rawContent = post.body || "";
 const readingTime = Math.max(1, Math.ceil(rawContent.split(/\s+/).length / WORDS_PER_MINUTE));
+
+const postJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  headline: post.data.title,
+  description: post.data.description,
+  datePublished: post.data.pubDate.toISOString(),
+  author: {
+    "@type": "Person",
+    name: post.data.author ?? "Jorge Espinoza",
+  },
+  mainEntityOfPage: new URL(`/blog/${post.id}/`, Astro.site).href,
+  image: new URL("/og.png", Astro.site).href,
+  keywords: post.data.tags?.join(", "),
+};
 ---
 
-<Layout title={`${post.data.title} — Jorge Espinoza`} description={post.data.description}>
-  <main class="mx-auto w-full max-w-3xl px-6 pt-32 md:pt-40">
+<Layout
+  title={`${post.data.title} — Jorge Espinoza`}
+  description={post.data.description}
+  jsonLd={postJsonLd}
+>
+  <main id="main-content" class="mx-auto w-full max-w-3xl px-6 pt-32 md:pt-40">
     <a
       href="/blog"
       class="inline-flex items-center gap-1.5 font-mono text-xs uppercase tracking-[0.15em] text-ink-500 transition-colors hover:text-accent-700 dark:text-ink-400 dark:hover:text-accent-400"

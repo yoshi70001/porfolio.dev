@@ -70,7 +70,7 @@ const navItems = [
           <a
             href={`/#${item.id}`}
             data-mobile-link
-            class="border-b border-paper-200 py-3 text-sm text-ink-700 last:border-b-0 dark:text-ink-200 dark:border-ink-800"
+            class="border-b border-paper-200 py-3 text-sm text-ink-700 transition-colors last:border-b-0 hover:bg-paper-50 hover:text-accent-700 dark:border-ink-800 dark:text-ink-200 dark:hover:bg-ink-900/60 dark:hover:text-accent-400"
           >
             {item.title}
           </a>
@@ -146,9 +146,15 @@ const navItems = [
       link.addEventListener("click", onLinkClick)
     })
 
+    const onKeydown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && mobileMenu && !mobileMenu.hidden) setMenu(false)
+    }
+    document.addEventListener("keydown", onKeydown)
+
     // Limpieza al navegar con view transitions
     document.addEventListener("astro:before-swap", () => {
       window.removeEventListener("scroll", onScroll)
+      document.removeEventListener("keydown", onKeydown)
       observer.disconnect()
     }, { once: true })
   }

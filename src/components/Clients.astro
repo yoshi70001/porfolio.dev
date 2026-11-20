@@ -1,0 +1,21 @@
+---
+import { collaborators } from "@/data/profile"
+---
+
+<div
+  data-reveal
+  class="rounded-lg border border-paper-200 bg-paper-50/60 px-6 py-8 sm:px-8 dark:border-ink-800 dark:bg-ink-900/40"
+>
+  <p class="font-mono text-[11px] font-medium uppercase tracking-[0.18em] text-ink-500 dark:text-ink-400">
+    Empresas y productos con los que he colaborado
+  </p>
+  <ul class="mt-5 flex flex-wrap items-center gap-x-7 gap-y-3">
+    {
+      collaborators.map((name) => (
+        <li class="font-display text-base font-medium text-ink-700 sm:text-lg dark:text-ink-200">
+          {name}
+        </li>
+      ))
+    }
+  </ul>
+</div>

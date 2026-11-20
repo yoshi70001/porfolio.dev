@@ -10,10 +10,12 @@ const featuredPosts = allPosts
 
 <div class="flex flex-col">
   {
-    featuredPosts.map((post) => (
+    featuredPosts.map((post, i) => (
       <a
         href={`/blog/${post.id}`}
-        class="group grid gap-2 border-t border-paper-200 py-6 transition-colors last:border-b hover:bg-paper-50 md:grid-cols-[9rem_1fr_auto] md:items-baseline md:gap-8 dark:border-ink-800 dark:hover:bg-ink-900/50"
+        data-reveal
+        style={`transition-delay: ${i * 70}ms`}
+        class="group grid gap-2 border-t border-paper-200 py-6 transition-all last:border-b hover:bg-paper-50 md:grid-cols-[9rem_1fr_auto] md:items-baseline md:gap-8 dark:border-ink-800 dark:hover:bg-ink-900/50"
       >
         <time
           datetime={post.data.pubDate.toISOString()}

@@ -4,8 +4,12 @@ import { certifications, totalCertifications } from "@/data/profile"
 
 <div class="divide-y divide-paper-200 dark:divide-ink-800">
   {
-    certifications.map((group) => (
-      <div class="grid gap-3 py-6 md:grid-cols-[16rem_1fr] md:gap-8">
+    certifications.map((group, i) => (
+      <div
+        data-reveal
+        style={`transition-delay: ${i * 50}ms`}
+        class="grid gap-3 py-6 md:grid-cols-[16rem_1fr] md:gap-8"
+      >
         <h3 class="flex items-baseline gap-3 font-display text-base font-semibold text-ink-900 dark:text-paper-50">
           <span class="font-mono text-xs font-medium text-ink-400 dark:text-ink-500" aria-hidden="true">
             {String(group.items.length).padStart(2, "0")}

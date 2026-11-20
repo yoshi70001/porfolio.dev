@@ -12,7 +12,7 @@ const posts = (await getCollection("blog")).sort(
   title="Blog — Jorge Espinoza"
   description="Artículos técnicos sobre NetSuite, SuiteScript, integraciones, OAuth 2.0 y DevOps, basados en experiencia real de proyectos empresariales."
 >
-  <main class="mx-auto w-full max-w-5xl px-6 pt-32 md:pt-40">
+  <main id="main-content" class="mx-auto w-full max-w-5xl px-6 pt-32 md:pt-40">
     <p class="font-mono text-xs font-medium uppercase tracking-[0.2em] text-accent-700 dark:text-accent-400">
       Blog
     </p>
@@ -28,7 +28,8 @@ const posts = (await getCollection("blog")).sort(
         posts.map((post) => (
           <a
             href={`/blog/${post.id}`}
-            class="group grid gap-2 border-t border-paper-200 py-7 transition-colors last:border-b md:grid-cols-[9rem_1fr_auto] md:items-baseline md:gap-8 dark:border-ink-800"
+            data-reveal
+            class="group grid gap-2 border-t border-paper-200 py-7 transition-colors last:border-b hover:bg-paper-50 md:grid-cols-[9rem_1fr_auto] md:items-baseline md:gap-8 dark:border-ink-800 dark:hover:bg-ink-900/50"
           >
             <time
               datetime={post.data.pubDate.toISOString()}

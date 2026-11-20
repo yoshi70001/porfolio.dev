@@ -3,10 +3,11 @@ import LinkButton from "./LinkButton.astro"
 import SocialPill from "./SocialPill.astro"
 import GitHubIcon from "./icons/GitHub.astro"
 import LinkedInIcon from "./icons/LinkedIn.astro"
+import MailIcon from "./icons/Mail.astro"
 import { identity, socials } from "@/data/profile"
 ---
 
-<div class="border-t-2 border-ink-900 pt-10 md:pt-14 dark:border-paper-50">
+<div data-reveal class="border-t-2 border-ink-900 pt-10 md:pt-14 dark:border-paper-50">
   <p class="font-mono text-xs font-medium uppercase tracking-[0.2em] text-accent-700 dark:text-accent-400">
     Contacto
   </p>
@@ -20,15 +21,155 @@ import { identity, socials } from "@/data/profile"
     sobre tu implementación. Suelo responder en menos de 24 horas.
   </p>
 
-  <div class="mt-9 flex flex-wrap items-center gap-3">
-    <LinkButton href={socials.email} variant="primary">Escríbeme — {identity.email}</LinkButton>
-    <SocialPill href={socials.linkedin}>
-      <LinkedInIcon class="size-4" />
-      LinkedIn
-    </SocialPill>
-    <SocialPill href={socials.github}>
-      <GitHubIcon class="size-4" />
-      GitHub
-    </SocialPill>
+  <div class="mt-10 grid gap-10 md:grid-cols-2 md:gap-14">
+    <div>
+      <div class="flex flex-wrap items-center gap-3">
+        <LinkButton href={socials.email} variant="primary">
+          <MailIcon class="size-4" />
+          Escríbeme
+        </LinkButton>
+        <button
+          type="button"
+          data-copy-email={identity.email}
+          class="inline-flex items-center justify-center gap-2 rounded-lg border border-paper-300 px-5 py-2.5 text-sm font-semibold text-ink-800 transition-colors duration-200 hover:border-ink-800 hover:bg-ink-900 hover:text-paper-50 dark:border-ink-700 dark:text-ink-100 dark:hover:border-ink-300 dark:hover:bg-ink-100 dark:hover:text-ink-950"
+        >
+          <span data-copy-label>{identity.email}</span>
+        </button>
+      </div>
+
+      <p class="mt-6 font-mono text-[11px] uppercase tracking-[0.16em] text-ink-500 dark:text-ink-400">
+        También en
+      </p>
+      <div class="mt-3 flex flex-wrap items-center gap-3">
+        <SocialPill href={socials.linkedin}>
+          <LinkedInIcon class="size-4" />
+          LinkedIn
+        </SocialPill>
+        <SocialPill href={socials.github}>
+          <GitHubIcon class="size-4" />
+          GitHub
+        </SocialPill>
+      </div>
+    </div>
+
+    <form
+      id="contact-form"
+      data-email={identity.email}
+      class="rounded-lg border border-paper-200 bg-paper-50 p-5 sm:p-6 dark:border-ink-800 dark:bg-ink-900/60"
+    >
+      <p class="font-mono text-[11px] font-medium uppercase tracking-[0.18em] text-accent-700 dark:text-accent-400">
+        O envía un mensaje
+      </p>
+
+      <div class="mt-4 grid gap-4">
+        <div>
+          <label for="cf-name" class="block text-sm font-medium text-ink-700 dark:text-ink-200">Nombre</label>
+          <input
+            id="cf-name"
+            name="name"
+            type="text"
+            required
+            autocomplete="name"
+            class="mt-1.5 w-full rounded-md border border-paper-300 bg-paper-50 px-3 py-2 text-sm text-ink-900 placeholder:text-ink-400 dark:border-ink-700 dark:bg-ink-950 dark:text-paper-50"
+            placeholder="Tu nombre"
+          />
+        </div>
+        <div>
+          <label for="cf-email" class="block text-sm font-medium text-ink-700 dark:text-ink-200">Email</label>
+          <input
+            id="cf-email"
+            name="email"
+            type="email"
+            required
+            autocomplete="email"
+            class="mt-1.5 w-full rounded-md border border-paper-300 bg-paper-50 px-3 py-2 text-sm text-ink-900 placeholder:text-ink-400 dark:border-ink-700 dark:bg-ink-950 dark:text-paper-50"
+            placeholder="tu@email.com"
+          />
+        </div>
+        <div>
+          <label for="cf-message" class="block text-sm font-medium text-ink-700 dark:text-ink-200">Mensaje</label>
+          <textarea
+            id="cf-message"
+            name="message"
+            required
+            rows="4"
+            class="mt-1.5 w-full resize-y rounded-md border border-paper-300 bg-paper-50 px-3 py-2 text-sm text-ink-900 placeholder:text-ink-400 dark:border-ink-700 dark:bg-ink-950 dark:text-paper-50"
+            placeholder="Cuéntame sobre tu proyecto…"
+          ></textarea>
+        </div>
+      </div>
+
+      <div class="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center">
+        <button
+          type="submit"
+          class="inline-flex items-center justify-center gap-2 rounded-lg bg-accent-600 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-accent-700 dark:bg-accent-500 dark:text-ink-950 dark:hover:bg-accent-400"
+        >
+          Enviar mensaje
+        </button>
+        <p class="text-xs leading-snug text-ink-500 dark:text-ink-400">
+          Se abrirá tu cliente de correo con el mensaje listo para enviar.
+        </p>
+      </div>
+    </form>
   </div>
 </div>
+
+<script>
+  const initContact = () => {
+    // Copiar email con feedback
+    document.querySelectorAll<HTMLButtonElement>("[data-copy-email]").forEach((btn) => {
+      if (btn.dataset.bound === "true") return
+      btn.dataset.bound = "true"
+
+      btn.addEventListener("click", async () => {
+        const email = btn.dataset.copyEmail ?? ""
+        const label = btn.querySelector<HTMLElement>("[data-copy-label]")
+        if (!label) return
+        const original = label.textContent ?? email
+
+        try {
+          await navigator.clipboard.writeText(email)
+        } catch {
+          const input = document.createElement("textarea")
+          input.value = email
+          input.style.position = "fixed"
+          input.style.opacity = "0"
+          document.body.appendChild(input)
+          input.select()
+          document.execCommand("copy")
+          input.remove()
+        }
+
+        label.textContent = "¡Copiado!"
+        btn.classList.add("border-accent-600", "text-accent-700", "dark:border-accent-400", "dark:text-accent-400")
+        setTimeout(() => {
+          label.textContent = original
+          btn.classList.remove("border-accent-600", "text-accent-700", "dark:border-accent-400", "dark:text-accent-400")
+        }, 2000)
+      })
+    })
+
+    // Formulario → abre el cliente de correo (sin backend)
+    const form = document.getElementById("contact-form") as HTMLFormElement | null
+    if (form && form.dataset.bound !== "true") {
+      form.dataset.bound = "true"
+      form.addEventListener("submit", (e) => {
+        e.preventDefault()
+        if (!form.reportValidity()) return
+
+        const data = new FormData(form)
+        const name = String(data.get("name") ?? "")
+        const email = String(data.get("email") ?? "")
+        const message = String(data.get("message") ?? "")
+
+        const subject = encodeURIComponent(`Consulta desde el portafolio — ${name}`)
+        const body = encodeURIComponent(
+          `${message}\n\n—\n${name}\n${email}`,
+        )
+        window.location.href = `mailto:${form.dataset.email ?? ""}?subject=${subject}&body=${body}`
+      })
+    }
+  }
+
+  document.addEventListener("astro:page-load", initContact)
+</script>
